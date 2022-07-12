@@ -52,7 +52,7 @@ def vergi(kum, matrah):
 c1,c2,c3 = st.columns(3)
 
 with c1:
-    Aylık[0] = st.number_input(label= "Ocak Aylık Ücret", step=100, value= Aylık[0] )
+    Aylık[0] = st.number_input(label= "Ocak Aylık Ücret", step=100, value= 7800 )
     Aylık[1] = st.number_input(label= "Şubat Aylık Ücret", step=100, value= Aylık[0] )
     Aylık[2] = st.number_input(label= "Mart Aylık Ücret", step=100, value= Aylık[1] )
     Aylık[3] = st.number_input(label= "Nisan Aylık Ücret", step=100, value= Aylık[2] )
@@ -65,7 +65,7 @@ with c1:
     Aylık[10] = st.number_input(label= "Kasım Aylık Ücret", step=100, value= Aylık[9] )
     Aylık[11] = st.number_input(label= "Aralık Aylık Ücret", step=100, value= Aylık[10] )    
 with c2:
-    Sabit[0] = st.number_input(label= "Diğer Sabit Ücretler", step=100, value= Sabit[0] )
+    Sabit[0] = st.number_input(label= "Diğer Sabit Ücretler", step=100, value= 0 )
     Sabit[1] = st.number_input(label= "Diğer Sabit Ücretler", step=100, value= Sabit[0], key="ş" )
     Sabit[2] = st.number_input(label= "Diğer Sabit Ücretler", step=100, value= Sabit[1],key="m" )
     Sabit[3] = st.number_input(label= "Diğer Sabit Ücretler", step=100, value= Sabit[2],key="n" )    
