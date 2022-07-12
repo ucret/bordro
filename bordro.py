@@ -51,7 +51,7 @@ d1,d2 = st.columns(2)
 with d1:
     genel= st.number_input(label= "Aylık Ücret", step=100, value= 7800 )    
 with d2:
-    sabit = st.number_input(label= "Diğer Sabit Ücretler", step=100, value= 0 , key= "ge")
+    sabit = st.number_input(label= "Diğer Sabit Ücretler", step=100, value= 2600 , key= "ge")
 
 with st.expander("Detay"):
     c1,c2,c3 = st.columns(3)
