@@ -1,9 +1,8 @@
+import matplotlib.pyplot as plt
 import streamlit as st
 import pandas as pd
 import numpy as np
 import math as mt
-import matplotlib.pyplot as plt
-
 
 
 Aylık = [0,1,2,3,4,5,6,7,8,9,10,11]
