@@ -141,9 +141,9 @@ tablo = pd.DataFrame(dic, index=["Ocak","Şubat", "Mart","Nisan","Mayıs","Hazir
 
 
 
-
-tablo.loc["Ortalama"]= tablo.mean()
 tablo.loc["Toplam"] = tablo.sum()
+tablo.loc["Ortalama"]= tablo.mean()
+
 
 
 
