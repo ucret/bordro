@@ -139,6 +139,18 @@ tablo = pd.DataFrame(dic, index=["Ocak","Şubat", "Mart","Nisan","Mayıs","Hazir
                                  "Eylül","Ekim","Kasım","Aralık"])
 
 
+
+x = tablo["Toplam Brüt Ücret"].to_numpy()
+y = tablo["Net Tutar"].to_numpy()
+z= x-y
+aylar = ["Ocak","Şubat", "Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"]
+
+fig, ax = plt.subplots()
+
+p1 = ax.bar(aylar,y, label = "Net")
+p2 = ax.bar(aylar,z, bottom = y, label= "Brüt")
+
+
 tablo.loc["Ortalama"]= tablo.mean()
 tablo.loc["Toplam"] = tablo.sum()
 
@@ -148,6 +160,7 @@ tablo = tablo.applymap("{0:,.2f}₺".format)
 
 
 st.table(tablo)
+st.pyplot(fig)
 
 
 
