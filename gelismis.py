@@ -151,7 +151,7 @@ tablo = tablo.applymap("{0:,.2f}₺".format)
 
 
 st.table(tablo)
-st.pyplot(fig)
+
 
 
 
