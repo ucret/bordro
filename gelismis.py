@@ -1,5 +1,4 @@
 
-import matplotlib.pyplot as plt
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -141,15 +140,6 @@ tablo = pd.DataFrame(dic, index=["Ocak","Şubat", "Mart","Nisan","Mayıs","Hazir
 
 
 
-x = tablo["Toplam Brüt Ücret"].to_numpy()
-y = tablo["Net Tutar"].to_numpy()
-z= x-y
-aylar = ["Ocak","Şubat", "Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"]
-
-fig, ax = plt.subplots()
-
-p1 = ax.bar(aylar,y, label = "Net")
-p2 = ax.bar(aylar,z, bottom = y, label= "Brüt")
 
 
 tablo.loc["Ortalama"]= tablo.mean()
