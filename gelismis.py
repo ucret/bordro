@@ -78,7 +78,7 @@ with c2:
     Sabit[10] = st.number_input(label= "Diğer Sabit Ücretler", step=100, value= Sabit[9] ,key="s")
     Sabit[11] = st.number_input(label= "Diğer Sabit Ücretler", step=100, value= Sabit[10] ,key="r")
 with c3:
-    ilave[0] = st.number_input(label= "İlave Ödenek", step=100, value= 0 ,key="ş")
+    ilave[0] = st.number_input(label= "İlave Ödenek", step=100, value= 0 ,key="şs")
     ilave[1] = st.number_input(label= "İlave Ödenek", step=100, value= 0,key="mart" )
     ilave[2] = st.number_input(label= "İlave Ödenek", step=100, value= 0 ,key="nis")
     ilave[3] = st.number_input(label= "İlave Ödenek", step=100, value= 0 ,key="may")    
