@@ -126,6 +126,9 @@ for i in range(12):
     kvm[i+1] = round(kvm[i] + vm[i])
     gv[i] = round(vergi(kvm[i], vm[i]))
     munzam[i] = round((Aylık[i] + mt.ceil(Aylık[i]/3))*0.07,2)
+    
+    igv[i] = max(gv[i],igv[i])
+    idv[i] = max(idv[i],dv[i])
     net[i] = round(Toplam[i]-(sske[i]+sski[i]+dv[i]+gv[i]) + igv[i] + idv[i]-munzam[i])
     ktoplam[i] = kullan1[i] + kullan2[i]
     dtoplam[i] = devreden1[i] + devreden2[i]
