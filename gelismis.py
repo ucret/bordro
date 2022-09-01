@@ -140,9 +140,10 @@ tablo = pd.DataFrame(dic, index=["Ocak","Şubat", "Mart","Nisan","Mayıs","Hazir
 
 
 
-
-tablo.loc["Toplam"] = tablo.sum()
-tablo.loc["Ortalama"]= tablo.mean()
+ortalamat = tablo.mean()
+toplamat = tablo.sum()
+tablo.loc["Toplam"] = toplamat
+tablo.loc["Ortalama"]= ortalamat
 
 
 
