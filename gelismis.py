@@ -5,35 +5,35 @@ import numpy as np
 import math as mt
 
 
-Aylık = [0,1,2,3,4,5,6,7,8,9,10,11]
-Sabit = [0,1,2,3,4,5,6,7,8,9,10,11]
-ilave = [0,1,2,3,4,5,6,7,8,9,10,11]
-kvm = [0,1,2,3,4,5,6,7,8,9,10,11,12]
-vm = [0,1,2,3,4,5,6,7,8,9,10,11]
-sskm = [0,1,2,3,4,5,6,7,8,9,10,11]
-sske = [0,1,2,3,4,5,6,7,8,9,10,11]
-sski = [0,1,2,3,4,5,6,7,8,9,10,11]
-dv = [0,1,2,3,4,5,6,7,8,9,10,11]
-idv =  [37.98,37.98,37.98,37.98,37.98,37.98,49.12,49.12,49.12,49.12,49.12,49.12]
-Toplam = [0,1,2,3,4,5,6,7,8,9,10,11]
-munzam = [0,1,2,3,4,5,6,7,8,9,10,11]
+Aylık = [0,1,2,3,4,5,6,7,8,9,10,11] #Aylık Ücret
+Sabit = [0,1,2,3,4,5,6,7,8,9,10,11] # Aylık ücret dışındaki sabit ücretler
+ilave = [0,1,2,3,4,5,6,7,8,9,10,11] #Ay içinde ödenen değişken ücret
+kvm = [0,1,2,3,4,5,6,7,8,9,10,11,12] #kümulatif gelir matrahı
+vm = [0,1,2,3,4,5,6,7,8,9,10,11] # vergi matrahı
+sskm = [0,1,2,3,4,5,6,7,8,9,10,11] #Emekli sandığı matrahı
+sske = [0,1,2,3,4,5,6,7,8,9,10,11] #Emekli sandığı payı
+sski = [0,1,2,3,4,5,6,7,8,9,10,11] #İşsizlik çalışan payı
+dv = [0,1,2,3,4,5,6,7,8,9,10,11] #damga vergisi
+idv =  [37.98,37.98,37.98,37.98,37.98,37.98,49.12,49.12,49.12,49.12,49.12,49.12] # vergi istisnası
+Toplam = [0,1,2,3,4,5,6,7,8,9,10,11] #Toplam Brüt ücret
+munzam = [0,1,2,3,4,5,6,7,8,9,10,11] # Munzam Sandik payı
 
-igv = [638.01,638.01,638.01,638.01,638.01,638.01,825.05,1051.11,1100.07,1100.07,1100.07,1100.07]
-tavan = [5004*7.5,5004*7.5,5004*7.5,5004*7.5,5004*7.5,5004*7.5,6471*7.5,6471*7.5,6471*7.5,6471*7.5,6471*7.5,6471*7.5]
-devreden1 = [0,0,0,0,0,0,0,0,0,0,0,0,0]
-devreden2 = [0,0,0,0,0,0,0,0,0,0,0,0,0]
-kullan1 = [0,0,0,0,0,0,0,0,0,0,0,0]
-kullan2 = [0,0,0,0,0,0,0,0,0,0,0,0]
-dtoplam = [0,0,0,0,0,0,0,0,0,0,0,0]
-ktoplam = [0,0,0,0,0,0,0,0,0,0,0,0]
+igv = [638.01,638.01,638.01,638.01,638.01,638.01,825.05,1051.11,1100.07,1100.07,1100.07,1100.07] #Gelir vergisi istisnası
+tavan = [5004*7.5,5004*7.5,5004*7.5,5004*7.5,5004*7.5,5004*7.5,6471*7.5,6471*7.5,6471*7.5,6471*7.5,6471*7.5,6471*7.5] #Emekli sandığı tavanı
+devreden1 = [0,0,0,0,0,0,0,0,0,0,0,0,0] #birinci devreden matrah
+devreden2 = [0,0,0,0,0,0,0,0,0,0,0,0,0] #ikinci devreden matrah
+kullan1 = [0,0,0,0,0,0,0,0,0,0,0,0] # 1. devreden matrahtan kullanılan
+kullan2 = [0,0,0,0,0,0,0,0,0,0,0,0] # 2. devreden matrahtan kullanılan
+dtoplam = [0,0,0,0,0,0,0,0,0,0,0,0] #devreden toplam
+ktoplam = [0,0,0,0,0,0,0,0,0,0,0,0] # devreden matrah kullanılan
 
-net = [0,1,2,3,4,5,6,7,8,9,10,11]
-gv = [0,1,2,3,4,5,6,7,8,9,10,11]
+net = [0,1,2,3,4,5,6,7,8,9,10,11] # net gelir
+gv = [0,1,2,3,4,5,6,7,8,9,10,11] # gelir vergisi
 
-def vergi(kum, matrah):
-    v = [32000,70000,250000,880000]
-    o = [0.15,0.2,0.27,0.35,0.4]
-    t= kum + matrah
+def vergi(kum, matrah): # Vergi hesaplama fonksiyonu, Kümulatif matrah ve aylık matrah
+    v = [32000,70000,250000,880000] # vergi dilimleri
+    o = [0.15,0.2,0.27,0.35,0.4] #vergi oranları
+    t= kum + matrah #ara kümulatif matrah
     if t <= v[0]:
        return matrah*o[0]
     elif t <= v[1]:
@@ -49,9 +49,9 @@ def vergi(kum, matrah):
     
 
 
-c1,c2,c3 = st.columns(3)
+c1,c2,c3 = st.columns(3) # streamlit uygulama kodları
 
-with c1:
+with c1: # streamlit uygulama kodları
     Aylık[0] = st.number_input(label= "Ocak Aylık Ücret", step=100, value= 7800 )
     Aylık[1] = st.number_input(label= "Şubat Aylık Ücret", step=100, value= Aylık[0] )
     Aylık[2] = st.number_input(label= "Mart Aylık Ücret", step=100, value= Aylık[1] )
@@ -64,7 +64,7 @@ with c1:
     Aylık[9]= st.number_input(label= "Ekim Aylık Ücret", step=100 , value= Aylık[8])
     Aylık[10] = st.number_input(label= "Kasım Aylık Ücret", step=100, value= Aylık[9] )
     Aylık[11] = st.number_input(label= "Aralık Aylık Ücret", step=100, value= Aylık[10] )    
-with c2:
+with c2: # streamlit uygulama kodları
     Sabit[0] = st.number_input(label= "Diğer Sabit Ücretler", step=100, value= 0 )
     Sabit[1] = st.number_input(label= "Diğer Sabit Ücretler", step=100, value= Sabit[0], key="ş" )
     Sabit[2] = st.number_input(label= "Diğer Sabit Ücretler", step=100, value= Sabit[1],key="m" )
@@ -77,7 +77,7 @@ with c2:
     Sabit[9]= st.number_input(label= "Diğer Sabit Ücretler", step=100 , value= Sabit[8],key="k")
     Sabit[10] = st.number_input(label= "Diğer Sabit Ücretler", step=100, value= Sabit[9] ,key="s")
     Sabit[11] = st.number_input(label= "Diğer Sabit Ücretler", step=100, value= Sabit[10] ,key="r")
-with c3:
+with c3: # streamlit uygulama kodları
     ilave[0] = st.number_input(label= "İlave Ödenek", step=100, value= 0 ,key="şs")
     ilave[1] = st.number_input(label= "İlave Ödenek", step=100, value= 0,key="marts" )
     ilave[2] = st.number_input(label= "İlave Ödenek", step=100, value= 0 ,key="nis")
@@ -91,7 +91,7 @@ with c3:
     ilave[10] = st.number_input(label= "İlave Ödenek", step=100, value= 0 ,key="ara")
     ilave[11] = st.number_input(label= "İlave Ödenek", step=100, value= 0,key="sd")
 
-for i in range(12):
+for i in range(12): # i = ilgili ay, 12 ay için döngü
     Toplam[i] = Aylık[i] + Sabit[i] + ilave [i]
     if (Aylık[i] + Sabit[i]) >= tavan[i]:
         sskm[i]= tavan[i]
@@ -135,26 +135,27 @@ for i in range(12):
     
 
 
-
+#sonuç sözlüğü toparlama tablosu
 dic = {"Toplam Brüt Ücret": Toplam,"Emekli Sandığı Payı":sske,"Emekli Sandığı İşsizlik Payı":sski,"Devreden Toplam": dtoplam,"Devreden Kullanılan": ktoplam,"Gelir Vergisi":gv,"Damga Vergisi İstisnası":idv,"Vergi İstisnası": igv, "Munzam Çalışan Payı": munzam,"Net Tutar": net}
-  
+
+#sonuç tablosu
 tablo = pd.DataFrame(dic, index=["Ocak","Şubat", "Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos",
                                  "Eylül","Ekim","Kasım","Aralık"])
 
 
 
-ortalamat = tablo.mean()
-toplamat = tablo.sum()
+ortalamat = tablo.mean() #ortalama ödenen satırı
+toplamat = tablo.sum() #toplam ödenen satırı
 tablo.loc["Toplam"] = toplamat
 tablo.loc["Ortalama"]= ortalamat
 
 
 
 
-tablo = tablo.applymap("{0:,.2f}₺".format)
+tablo = tablo.applymap("{0:,.2f}₺".format) # format
 
 
-st.table(tablo)
+st.table(tablo) #streamlit tablo gösterimi
 
 
 
