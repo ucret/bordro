@@ -69,7 +69,7 @@ def ms_banka_payi(Aylık):
     return (Aylık + mt.ceil(Aylık[i]/3)) * 0.15
 
 def net_to_brut(matrah,net_tutar):
-    a= round(vergi(matrah,net_tutar)) # GV ile brütleştirme tutarı
+    a= round((vergi(matrah,net_tutar)),2) # GV ile brütleştirme tutarı
     b= (net_tutar+a)/0.85-(net_tutar+a) # ESIS Tutarı  (%15 ile brütleştirme)
     c= (net_tutar+a+b)*0.00759 # Damga vergisi
     return (net_tutar+a+b+c)
@@ -125,7 +125,7 @@ for i in range(12): # i = ilgili ay, 12 ay için döngü
 
     igv[i] = min(gv[i],igv[i])
     idv[i] = min(idv[i],dv[i])
-    net[i] = round(Toplam[i]-(sske[i]+sski[i]+dv[i]+gv[i]) + igv[i] + idv[i]-ms_C[i])
+    net[i] = round((Toplam[i]-(sske[i]+sski[i]+dv[i]+gv[i]) + igv[i] + idv[i]-ms_C[i]),2)
     ktoplam[i] = kullan1[i] + kullan2[i]
     dtoplam[i] = devreden1[i] + devreden2[i]
 
@@ -158,13 +158,13 @@ for i in range(12): # i = ilgili ay, 12 ay için döngü
     sske[i] = round(sskm_msB_dahil[i]*0.14,2)
     sski[i] = round(sskm_msB_dahil[i]*0.01,2)
     dv[i] = round(ms_B_dahil_toplam_brüt[i]*0.00759,2)
-    vm_MS_B_Dahil[i] = round(ms_B_dahil_toplam_brüt[i]-sske[i]-sski[i])
-    kvm_MS_B_Dahil[i+1] = round(kvm_MS_B_Dahil[i] + vm_MS_B_Dahil[i])
-    gv_MS_B_Dahil[i] = round(vergi(kvm_MS_B_Dahil[i], vm_MS_B_Dahil[i]))
+    vm_MS_B_Dahil[i] = round((ms_B_dahil_toplam_brüt[i]-sske[i]-sski[i]),2)
+    kvm_MS_B_Dahil[i+1] = round((kvm_MS_B_Dahil[i] + vm_MS_B_Dahil[i]),2)
+    gv_MS_B_Dahil[i] = round((vergi(kvm_MS_B_Dahil[i], vm_MS_B_Dahil[i])),2)
 
     igv[i] = min(gv[i],igv[i])
     idv[i] = min(idv[i],dv[i])
-    net_ms[i] = round(ms_B_dahil_toplam_brüt[i]-(sske[i]+sski[i]+dv[i]+gv_MS_B_Dahil[i]) + igv[i] + idv[i]-ms_C[i])
+    net_ms[i] = round((ms_B_dahil_toplam_brüt[i]-(sske[i]+sski[i]+dv[i]+gv_MS_B_Dahil[i]) + igv[i] + idv[i]-ms_C[i]),2)
     ktoplam[i] = kullan1[i] + kullan2[i]
     dtoplam[i] = devreden1[i] + devreden2[i]
     net_ms_c[i] = net_ms[i] + ms_C[i]
