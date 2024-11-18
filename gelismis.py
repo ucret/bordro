@@ -3,7 +3,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import math as mt
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 
 Aylık = [0]*12 #Aylık Ücret
@@ -200,58 +200,7 @@ tablo_ms = tablo_ms.applymap("{0:,.2f}₺".format) # format
 st.table(tablo) #streamlit tablo gösterimi
 st.table(tablo_ms)
 
-#-------------- PİE CHART ------------------------
 
-# Hesaplamaların yapılması (kesintiler, net ücret gibi)
-kesintiler = [sske[i] + sski[i] + gv_MS_B_Dahil[i] + dv[i] + ms_C[i] for i in range(12)]
-net_toplam = sum(net_ms)
-kesinti_toplam = sum(kesintiler)
-toplam = kesinti_toplam + net_toplam  # Toplam brüt ücret
-
-
-# Doughnut chart için veriler
-labels = ["Kesintiler", "Net Ücret"]
-sizes = [kesinti_toplam, net_toplam]
-
-# Renk paleti
-colors = ['#8B008B', '#40E0D0']  # Kesintiler için koyu pembe-mor, net ücret için turkuaz
-
-# Doughnut chart çizimi
-fig, ax = plt.subplots()
-ax.pie(
-    sizes,
-    startangle=140,
-    colors=colors,
-    wedgeprops=dict(width=0.4),  # Ortası boş hale getirmek için
-)
-
-# Ortadaki metni ekleme
-ax.text(0, 0, f"Ücretler\nToplamı:\n{toplam:,.2f}₺", ha='center', va='center', fontsize=12, fontweight='bold')
-
-# Başlık
-ax.set_title("Ücret ve Kesintilerinizin Dağılımı", fontsize=14)
-
-# Arka planı kaldır
-fig.patch.set_facecolor('none')
-
-# Streamlit'te Doughnut chart gösterimi
-st.pyplot(fig)
-
-# Alt metinler: Kesintiler ve Net Ücret
-kesintiler_yuzde = (kesinti_toplam / toplam) * 100
-net_ucret_yuzde = (net_toplam / toplam) * 100
-
-st.markdown(f"""
-<div style="text-align: center;">
-    <span style="color: {colors[0]}; font-weight: bold; font-size: 22px;">
-        Kesintiler: {kesinti_toplam:,.2f}₺ (%{kesintiler_yuzde:.1f})
-    </span>
-    <br>
-    <span style="color: {colors[1]}; font-weight: bold; font-size: 22px;">
-        Net Ücret: {net_toplam:,.2f}₺ (%{net_ucret_yuzde:.1f})
-    </span>
-</div>
-""", unsafe_allow_html=True)
 
 
 
