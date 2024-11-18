@@ -176,9 +176,10 @@ for i in range(12): # i = ilgili ay, 12 ay için döngü
 
 #sonuç sözlüğü toparlama tablosu
 dic = {"Toplam Brüt Ücret": Toplam,"Emekli Sandığı Payı":sske,"Emekli Sandığı İşsizlik Payı":sski,"Devreden Toplam": dtoplam,"Devreden Kullanılan": ktoplam,"Gelir Vergisi":gv,"Damga Vergisi İstisnası":idv,"Vergi İstisnası": igv, "Munzam Çalışan Payı": ms_C,"Net Tutar": net}
-dic_ms = {"Toplam Brüt Ücret": ms_B_dahil_toplam_brüt,"Emekli Sandığı Payı":sske,"Emekli Sandığı İşsizlik Payı":sski,"Devreden Toplam": dtoplam,"Devreden Kullanılan": ktoplam,"Gelir Vergisi":gv_MS_B_Dahil,"Damga Vergisi İstisnası":idv,"Vergi İstisnası": igv, "Munzam Çalışan Payı": ms_C,"Net Tutar": net_ms,"ms b brüt": ms_B_brüt}
+dic_ms = {"Toplam Brüt Ücret": ms_B_dahil_toplam_brüt,"Emekli Sandığı Payı":sske,"Emekli Sandığı İşsizlik Payı":sski,"Devreden Toplam": dtoplam,"Devreden Kullanılan": ktoplam,"Gelir Vergisi":gv_MS_B_Dahil,"Damga Vergisi İstisnası":idv,"Vergi İstisnası": igv, "Munzam Çalışan Payı": ms_C,"Net Tutar": net_ms + ms_C,"ms b brüt": ms_B_brüt}
 
 #sonuç tablosu
+
 tablo = pd.DataFrame(dic, index=["Ocak","Şubat", "Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos",
                                  "Eylül","Ekim","Kasım","Aralık"])
 
@@ -193,8 +194,8 @@ tablo.loc["Ortalama"]= ortalamat
 
 ortalamat_ms = tablo_ms.mean() #ortalama ödenen satırı
 toplamat_ms = tablo_ms.sum() #toplam ödenen satırı
-tablo_ms.loc["Toplam"] = toplamat_ms + ms_c
-tablo_ms.loc["Ortalama"]= ortalamat_ms + ms_c
+tablo_ms.loc["Toplam"] = toplamat_ms
+tablo_ms.loc["Ortalama"]= ortalamat_ms
 
 
 tablo = tablo.applymap("{0:,.2f}₺".format) # format
