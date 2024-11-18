@@ -23,6 +23,7 @@ dv = [0]*12 #damga vergisi
 idv =  [151.82]*12 # vergi istisnası
 Toplam = [0]*12 #Toplam Brüt ücret
 ms_C = [0]*12 # Munzam Sandik Çalışan payı 
+net_ms_c= [0]*12
 
 ms_B=[0]*12 # Munzam Sandik Banka payı
 ms_B_brüt=[0]*12 # Brütleştirilmiş MS Banka Payı
@@ -166,7 +167,7 @@ for i in range(12): # i = ilgili ay, 12 ay için döngü
     net_ms[i] = round(ms_B_dahil_toplam_brüt[i]-(sske[i]+sski[i]+dv[i]+gv_MS_B_Dahil[i]) + igv[i] + idv[i]-ms_C[i])
     ktoplam[i] = kullan1[i] + kullan2[i]
     dtoplam[i] = devreden1[i] + devreden2[i]
-
+    net_ms_c[i] = net_ms[i] + ms_C[i]
 
 
 
@@ -176,7 +177,7 @@ for i in range(12): # i = ilgili ay, 12 ay için döngü
 
 #sonuç sözlüğü toparlama tablosu
 dic = {"Toplam Brüt Ücret": Toplam,"Emekli Sandığı Payı":sske,"Emekli Sandığı İşsizlik Payı":sski,"Devreden Toplam": dtoplam,"Devreden Kullanılan": ktoplam,"Gelir Vergisi":gv,"Damga Vergisi İstisnası":idv,"Vergi İstisnası": igv, "Munzam Çalışan Payı": ms_C,"Net Tutar": net}
-dic_ms = {"Toplam Brüt Ücret": ms_B_dahil_toplam_brüt,"Emekli Sandığı Payı":sske,"Emekli Sandığı İşsizlik Payı":sski,"Devreden Toplam": dtoplam,"Devreden Kullanılan": ktoplam,"Gelir Vergisi":gv_MS_B_Dahil,"Damga Vergisi İstisnası":idv,"Vergi İstisnası": igv, "Munzam Çalışan Payı": ms_C,"Net Tutar": net_ms + ms_C,"ms b brüt": ms_B_brüt}
+dic_ms = {"Toplam Brüt Ücret": ms_B_dahil_toplam_brüt,"Emekli Sandığı Payı":sske,"Emekli Sandığı İşsizlik Payı":sski,"Devreden Toplam": dtoplam,"Devreden Kullanılan": ktoplam,"Gelir Vergisi":gv_MS_B_Dahil,"Damga Vergisi İstisnası":idv,"Vergi İstisnası": igv, "Munzam Çalışan Payı": ms_C,"Net Tutar": net_ms_c ,"ms b brüt": ms_B_brüt}
 
 #sonuç tablosu
 
