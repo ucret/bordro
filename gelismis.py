@@ -191,13 +191,21 @@ toplamat = tablo.sum() #toplam ödenen satırı
 tablo.loc["Toplam"] = toplamat
 tablo.loc["Ortalama"]= ortalamat
 
-
+ortalamat_ms = tablo_ms.mean() #ortalama ödenen satırı
+toplamat_ms = tablo_ms.sum() #toplam ödenen satırı
+tablo_ms.loc["Toplam"] = toplamat_ms
+tablo_ms.loc["Ortalama"]= ortalamat_ms
 
 
 tablo = tablo.applymap("{0:,.2f}₺".format) # format
 tablo_ms = tablo_ms.applymap("{0:,.2f}₺".format) # format
 
+
+
 st.table(tablo) #streamlit tablo gösterimi
+
+
+
 st.table(tablo_ms)
 
 
