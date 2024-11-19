@@ -9,8 +9,10 @@ import math as mt
 
 Aylık = [0]*12 #Aylık Ücret
 Tazm_Top = [0]*12 # Aylık ücret dışındaki Tazminatlar toplamı
-ilave = [0]*12 #Ay içinde ödenen değişken ücret
+ilave = [0]*12 #Ay içinde ödenen değişken ücret- brüt
 ikramiye =[0]*12 #İkramiye
+ek_gorev = [0]*12 #Ek Görev
+jest = [0]*12 #Jestiyon
 
 
 kvm = [0,1,2,3,4,5,6,7,8,9,10,11,12] #kümulatif gelir matrahı
@@ -228,8 +230,10 @@ for i, ay in enumerate(aylar):
         st.write(f"{ay} Ayı İkramiye Tutarınız (Brüt TL): {ikramiye[i]}₺")
         Tazm_Top[i] = st.number_input(f"{ay} Ayı Tazminat Toplamınız (Brüt TL)", step=1000, value=Tazm_Top[i - 1] if i > 0 else 0, key=f"Tazm_Top_{i}")
         ilave[i] = st.number_input(f"{ay} Ayı Prim/Temettü Toplamınız (Brüt TL)", step=1000, value=0 )
-        
-        
+        ek_gorev[i] = st.number_input(f"{ay} Ek Görev Tutarınız (Net TL)", step=1000, value=ek_gorev[i - 1] if i > 0 else 0, key=f"ek_gorev_{i}")
+        jest[i] = st.number_input(f"{ay} Jestiyon Tutarınız (Net TL)", step=1000, value=0 )
+
+
 for i in range(12): # i = ilgili ay, 12 ay için döngü
     Toplam[i] = Aylık[i] +ikramiye[i]+ Tazm_Top[i] + ilave[i]
     if (Aylık[i] + mt.ceil(Aylık[i]/3) + Tazm_Top[i]) >= tavan[i]:
