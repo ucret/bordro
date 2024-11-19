@@ -3,7 +3,6 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import math as mt
-# import matplotlib.pyplot as plt
 
 
 Aylık = [0]*12 #Aylık Ücret
@@ -23,7 +22,6 @@ dv = [0]*12 #damga vergisi
 idv =  [151.82]*12 # vergi istisnası
 Toplam = [0]*12 #Toplam Brüt ücret
 ms_C = [0]*12 # Munzam Sandik Çalışan payı 
-net_ms_c= [0]*12
 
 ms_B=[0]*12 # Munzam Sandik Banka payı
 ms_B_brüt=[0]*12 # Brütleştirilmiş MS Banka Payı
@@ -38,7 +36,8 @@ kullan1 = [0,0,0,0,0,0,0,0,0,0,0,0] # 1. devreden matrahtan kullanılan
 kullan2 = [0,0,0,0,0,0,0,0,0,0,0,0] # 2. devreden matrahtan kullanılan
 dtoplam = [0,0,0,0,0,0,0,0,0,0,0,0] #devreden toplam
 ktoplam = [0,0,0,0,0,0,0,0,0,0,0,0] # devreden matrah kullanılan
-
+mtrh_bosluk= [0]*12
+dev_1_mtrh_bosluk= [0]*12
 net = [0]*12 # net gelir
 net_ms = [0]*12 
 gv = [0]*12 # gelir vergisi
@@ -69,7 +68,7 @@ def ms_banka_payi(Aylık):
     return (Aylık + mt.ceil(Aylık[i]/3)) * 0.15
 
 def net_to_brut(matrah,net_tutar):
-    a= round((vergi(matrah,net_tutar)),2) # GV ile brütleştirme tutarı
+    a= round(vergi(matrah,net_tutar)) # GV ile brütleştirme tutarı
     b= (net_tutar+a)/0.85-(net_tutar+a) # ESIS Tutarı  (%15 ile brütleştirme)
     c= (net_tutar+a+b)*0.00759 # Damga vergisi
     return (net_tutar+a+b+c)
@@ -96,10 +95,10 @@ for i in range(12): # i = ilgili ay, 12 ay için döngü
 
     elif Toplam[i] <= tavan[i]:
         sskm[i] = min(Toplam[i] + devreden1[i] + devreden2[i], tavan[i])
-        kalan = tavan[i]- Toplam[i]
-        kalan1 = max(kalan-devreden1[i],0)
-        kullan1[i] = min(kalan,devreden1[i])
-        kullan2[i] = min(kalan1,devreden2[i])
+        mtrh_bosluk[i] = tavan[i]- Toplam[i] # İlk matrah boşluğu
+        dev_1_mtrh_bosluk[i] = max(mtrh_bosluk[i]-devreden1[i],0) 
+        kullan1[i] = min(mtrh_bosluk[i],devreden1[i])
+        kullan2[i] = min(dev_1_mtrh_bosluk[i],devreden2[i])
         if devreden1[i+1] != 0:
             devreden1[i+1] = devreden1[i+1] - kullan1[i]
         if devreden2[i+1] != 0:
@@ -125,7 +124,7 @@ for i in range(12): # i = ilgili ay, 12 ay için döngü
 
     igv[i] = min(gv[i],igv[i])
     idv[i] = min(idv[i],dv[i])
-    net[i] = round((Toplam[i]-(sske[i]+sski[i]+dv[i]+gv[i]) + igv[i] + idv[i]-ms_C[i]),2)
+    net[i] = round(Toplam[i]-(sske[i]+sski[i]+dv[i]+gv[i]) + igv[i] + idv[i]-ms_C[i])
     ktoplam[i] = kullan1[i] + kullan2[i]
     dtoplam[i] = devreden1[i] + devreden2[i]
 
@@ -137,10 +136,10 @@ for i in range(12): # i = ilgili ay, 12 ay için döngü
 
     elif ms_B_dahil_toplam_brüt[i] <= tavan[i]:
         sskm_msB_dahil[i] = min(ms_B_dahil_toplam_brüt[i] + devreden1[i] + devreden2[i], tavan[i])
-        kalan = tavan[i]- ms_B_dahil_toplam_brüt[i]
-        kalan1 = max(kalan-devreden1[i],0)
-        kullan1[i] = min(kalan,devreden1[i])
-        kullan2[i] = min(kalan1,devreden2[i])
+        mtrh_bosluk[i] = tavan[i]- ms_B_dahil_toplam_brüt[i]
+        dev_1_mtrh_bosluk[i] = max(mtrh_bosluk[i]-devreden1[i],0)
+        kullan1[i] = min(mtrh_bosluk[i],devreden1[i])
+        kullan2[i] = min(dev_1_mtrh_bosluk[i],devreden2[i])
         if devreden1[i+1] != 0:
             devreden1[i+1] = devreden1[i+1] - kullan1[i]
         if devreden2[i+1] != 0:
@@ -158,16 +157,16 @@ for i in range(12): # i = ilgili ay, 12 ay için döngü
     sske[i] = round(sskm_msB_dahil[i]*0.14,2)
     sski[i] = round(sskm_msB_dahil[i]*0.01,2)
     dv[i] = round(ms_B_dahil_toplam_brüt[i]*0.00759,2)
-    vm_MS_B_Dahil[i] = round((ms_B_dahil_toplam_brüt[i]-sske[i]-sski[i]),2)
-    kvm_MS_B_Dahil[i+1] = round((kvm_MS_B_Dahil[i] + vm_MS_B_Dahil[i]),2)
-    gv_MS_B_Dahil[i] = round((vergi(kvm_MS_B_Dahil[i], vm_MS_B_Dahil[i])),2)
+    vm_MS_B_Dahil[i] = round(ms_B_dahil_toplam_brüt[i]-sske[i]-sski[i])
+    kvm_MS_B_Dahil[i+1] = round(kvm_MS_B_Dahil[i] + vm_MS_B_Dahil[i])
+    gv_MS_B_Dahil[i] = round(vergi(kvm_MS_B_Dahil[i], vm_MS_B_Dahil[i]))
 
     igv[i] = min(gv[i],igv[i])
     idv[i] = min(idv[i],dv[i])
-    net_ms[i] = round((ms_B_dahil_toplam_brüt[i]-(sske[i]+sski[i]+dv[i]+gv_MS_B_Dahil[i]) + igv[i] + idv[i]-ms_C[i]),2)
+    net_ms[i] = round(ms_B_dahil_toplam_brüt[i]-(sske[i]+sski[i]+dv[i]+gv_MS_B_Dahil[i]) + igv[i] + idv[i]-ms_C[i])
     ktoplam[i] = kullan1[i] + kullan2[i]
     dtoplam[i] = devreden1[i] + devreden2[i]
-    net_ms_c[i] = net_ms[i] + ms_C[i]
+
 
 
 
@@ -177,15 +176,34 @@ for i in range(12): # i = ilgili ay, 12 ay için döngü
 
 #sonuç sözlüğü toparlama tablosu
 dic = {"Toplam Brüt Ücret": Toplam,"Emekli Sandığı Payı":sske,"Emekli Sandığı İşsizlik Payı":sski,"Devreden Toplam": dtoplam,"Devreden Kullanılan": ktoplam,"Gelir Vergisi":gv,"Damga Vergisi İstisnası":idv,"Vergi İstisnası": igv, "Munzam Çalışan Payı": ms_C,"Net Tutar": net}
-dic_ms = {"Toplam Brüt Ücret": ms_B_dahil_toplam_brüt,"Emekli Sandığı Payı":sske,"Emekli Sandığı İşsizlik Payı":sski,"Devreden Toplam": dtoplam,"Devreden Kullanılan": ktoplam,"Gelir Vergisi":gv_MS_B_Dahil,"Damga Vergisi İstisnası":idv,"Vergi İstisnası": igv, "Munzam Çalışan Payı": ms_C,"Net Tutar": net_ms_c ,"ms b brüt": ms_B_brüt}
+dic_ms = {"Toplam Brüt Ücret": ms_B_dahil_toplam_brüt,"Emekli Sandığı Payı":sske,"Emekli Sandığı İşsizlik Payı":sski,"Devreden Toplam": dtoplam,"Devreden Kullanılan": ktoplam,"Gelir Vergisi":gv_MS_B_Dahil,"Damga Vergisi İstisnası":idv,"Vergi İstisnası": igv, "Munzam Çalışan Payı": ms_C,"Net Tutar": net_ms,"ms b brüt": ms_B_brüt}
+
+row_labels = [
+    "Tavan",
+    "ms'siz brüt toplam",
+    "ms'li brüt",
+    "matrah bosluğu",
+    "devreden1",
+    "devreden2",
+    "1. devreden matrahtan kullanılan",
+    "2. devreden matrahtan kullanılan",
+    "devreden matrahtan kullanılan",
+    "devreden matrah kullanılan",
+]
+
+dic_mt = {aylar[i]: [tavan[i], Toplam[i], ms_B_dahil_toplam_brüt[i], mtrh_bosluk[i], devreden1[i], devreden2[i], kullan1[i], kullan2[i], dtoplam[i], ktoplam[i]] for i in range(12)}
+
+
 
 #sonuç tablosu
-
 tablo = pd.DataFrame(dic, index=["Ocak","Şubat", "Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos",
                                  "Eylül","Ekim","Kasım","Aralık"])
 
 tablo_ms = pd.DataFrame(dic_ms, index=["Ocak","Şubat", "Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos",
                                  "Eylül","Ekim","Kasım","Aralık"])
+
+tablo_mt = pd.DataFrame(dic_mt, index=row_labels)
+
 
 
 ortalamat = tablo.mean() #ortalama ödenen satırı
@@ -199,16 +217,18 @@ tablo_ms.loc["Toplam"] = toplamat_ms
 tablo_ms.loc["Ortalama"]= ortalamat_ms
 
 
+
+
 tablo = tablo.applymap("{0:,.2f}₺".format) # format
 tablo_ms = tablo_ms.applymap("{0:,.2f}₺".format) # format
+tablo_mt = tablo_mt.applymap("{0:,.2f}₺".format) # format
 
-
-
-st.table(tablo) #streamlit tablo gösterimi
-
-
-
+#streamlit tablo gösterimi
+st.table(tablo) 
 st.table(tablo_ms)
+
+st.table(tablo_mt)
+
 
 
 
