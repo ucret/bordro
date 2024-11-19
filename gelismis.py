@@ -1,8 +1,10 @@
 
+
 import streamlit as st
 import pandas as pd
 import numpy as np
 import math as mt
+
 
 
 Aylık = [0]*12 #Aylık Ücret
@@ -43,21 +45,6 @@ net_ms = [0]*12
 gv = [0]*12 # gelir vergisi
 gv_MS_B_Dahil = [0]*12 
 
-def vergi(kum, matrah): # Vergi hesaplama fonksiyonu, Kümulatif matrah ve aylık matrah
-    v = [110000, 230000, 580000, 3000000] # vergi dilimleri
-    o = [0.15,0.2,0.27,0.35,0.4] #vergi oranları
-    t= kum + matrah #ara kümulatif matrah
-    if t <= v[0]:
-       return matrah*o[0]
-    elif t <= v[1]:
-       return max((v[0]-kum),0)*o[0] + (matrah-max((v[0]-kum),0))*o[1]
-    elif t <= v[2]:
-       return max((v[0]-kum),0)*o[0] + max((v[1]-kum),0)*o[1] + (matrah-max((v[1]-kum),0)-max((v[0]-kum),0))*o[2]
-    elif t <= v[3]:
-        return max((v[0]-kum),0)*o[0] + max((v[1]-kum),0)*o[1] + max((v[2]-kum),0)*o[2] + (matrah-max((v[2]-kum),0)-max((v[1]-kum),0)- max((v[0]-kum),0))*o[3]
-    else:
-       return max((v[0]-kum),0)*o[0] + max((v[1]-kum),0)*o[1] + max((v[2]-kum),0)*o[2] + max((v[3]-kum),0)*o[3]+ (matrah-max((v[3]-kum),0)-max((v[2]-kum),0)-max((v[1]-kum),0)-max((v[0]-kum),0))*o[4]
-
 def ms_es_banka(toplam, tavan):
     if toplam < tavan:
         return toplam * 0.2275
@@ -67,11 +54,166 @@ def ms_es_banka(toplam, tavan):
 def ms_banka_payi(Aylık):
     return (Aylık + mt.ceil(Aylık[i]/3)) * 0.15
 
-def net_to_brut(matrah,net_tutar):
-    a= round(vergi(matrah,net_tutar)) # GV ile brütleştirme tutarı
-    b= (net_tutar+a)/0.85-(net_tutar+a) # ESIS Tutarı  (%15 ile brütleştirme)
-    c= (net_tutar+a+b)*0.00759 # Damga vergisi
-    return (net_tutar+a+b+c)
+def vergi(kum, matrah): # Vergi hesaplama fonksiyonu, Kümulatif matrah ve aylık matrah
+
+    v = [110000,230000,870000,3000000] # vergi dilimleri
+
+    o = [0.15,0.2,0.27,0.35,0.4] #vergi oranları
+
+    t= kum + matrah #ara kümulatif matrah
+
+    if t <= v[0]:
+
+       return matrah*o[0]
+
+    elif t <= v[1]:
+
+       return max((v[0]-kum),0)*o[0] + (matrah-max((v[0]-kum),0))*o[1]
+
+    elif t <= v[2]:
+
+       return max((v[0]-kum),0)*o[0] + max((v[1]-kum),0)*o[1] + (matrah-max((v[1]-kum),0)-max((v[0]-kum),0))*o[2]
+
+    elif t <= v[3]:
+
+        return max((v[0]-kum),0)*o[0] + max((v[1]-kum),0)*o[1] + max((v[2]-kum),0)*o[2] + (matrah-max((v[2]-kum),0)-max((v[1]-kum),0)- max((v[0]-kum),0))*o[3]
+
+    else:
+
+       return max((v[0]-kum),0)*o[0] + max((v[1]-kum),0)*o[1] + max((v[2]-kum),0)*o[2] + max((v[3]-kum),0)*o[3]+ (matrah-max((v[3]-kum),0)-max((v[2]-kum),0)-max((v[1]-kum),0)-max((v[0]-kum),0))*o[4]
+
+ 
+
+def brut_vergi(kum,net):
+
+    v = [110000,230000,870000,3000000] # vergi dilimleri
+
+    o = [0.15,0.2,0.27,0.35,0.4] #vergi oranları
+
+    damga = 0.00759
+
+    v_brut_bosluk = [0,0,0,0]
+
+    v_net_bosluk = [0,0,0,0]
+
+    vergi_brutu = 0
+
+    for i in range(len(v)):
+
+        if i == 0:      
+
+            v_brut_bosluk[i] = max(v[i]-kum,0)           
+
+        else:
+
+            v_brut_bosluk[i] = max (v[i]-kum-v_brut_bosluk[i-1],0)
+
+    for i in  range(len(v)):
+
+        v_net_bosluk[i] =  v_brut_bosluk[i]*(1-o[i]-damga)
+
+    if net - v_net_bosluk[0] <= 0:
+
+        vergi_brutu = net/(1-o[0]-damga)
+
+    elif net - sum(v_net_bosluk[:2]) <= 0:
+
+        vergi_brutu = v_brut_bosluk[0]+ (net-v_net_bosluk[0])/(1-o[1]-damga)
+
+    elif net - sum(v_net_bosluk[:3]) <= 0:
+
+        vergi_brutu = sum(v_brut_bosluk[:2])+ (net-sum(v_net_bosluk[:2]))/(1-o[2]-damga)
+
+    elif net - sum(v_net_bosluk[:4]) <= 0:
+
+        vergi_brutu = sum(v_brut_bosluk[:3])+ (net-sum(v_net_bosluk[:3]))/(1-o[3]-damga)
+
+    else:
+
+         vergi_brutu = sum(v_brut_bosluk[:4])+ (net-sum(v_net_bosluk[:4]))/(1-o[4]-damga)      
+
+    return vergi_brutu
+
+ 
+
+ 
+
+def brut_vergi_sgk(kum,net):
+
+    v = [110000,230000,870000,3000000] # vergi dilimleri
+
+    o = [0.15,0.2,0.27,0.35,0.4] #vergi oranları
+
+    damga = 0.00759
+
+    v_brut_bosluk = [0,0,0,0]
+
+    v_net_bosluk = [0,0,0,0]
+
+    vergi_brutu = 0
+
+    for i in range(len(v)):
+
+        if i == 0:      
+
+            v_brut_bosluk[i] = max(v[i]-kum,0)/0.85         
+
+        else:
+
+            v_brut_bosluk[i] = max (v[i]-kum-v_brut_bosluk[i-1],0)/0.85
+
+    for i in  range(len(v)):
+
+        v_net_bosluk[i] =  v_brut_bosluk[i]*((0.85)*(1-o[i])-damga)
+
+    if net - v_net_bosluk[0] <= 0:
+
+        vergi_brutu = net/((1-o[0])*0.85-damga)
+
+    elif net - sum(v_net_bosluk[:2]) <= 0:
+
+        vergi_brutu = v_brut_bosluk[0]+ (net-v_net_bosluk[0])/((1-o[1])*0.85-damga)
+
+    elif net - sum(v_net_bosluk[:3]) <= 0:
+
+        vergi_brutu = sum(v_brut_bosluk[:2])+ (net-sum(v_net_bosluk[:2]))/((1-o[2])*0.85-damga)
+
+    elif net - sum(v_net_bosluk[:4]) <= 0:
+
+        vergi_brutu = sum(v_brut_bosluk[:3])+ (net-sum(v_net_bosluk[:3]))/((1-o[3])*0.85-damga)
+
+    else:
+
+         vergi_brutu = sum(v_brut_bosluk[:4])+ (net-sum(v_net_bosluk[:4]))/((1-o[4])*0.85-damga)      
+
+    return vergi_brutu
+
+ 
+
+def netten_brute(i,gv_matrah,es_matrah,net):
+ 
+    damga = 0.00759
+
+    es_kalan_brut = tavan[i]-es_matrah
+
+    es_kalan_net = es_kalan_brut-vergi(gv_matrah,es_kalan_brut * 0.85 ) - es_kalan_brut * damga -  es_kalan_brut*0.15
+
+    if es_kalan_net >= net:
+
+        brut = brut_vergi_sgk(gv_matrah, net)
+
+    else:
+
+        es_artan_net = net-es_kalan_net
+
+        gv_matrah2 = es_kalan_brut*0.85 + gv_matrah  
+
+        brut =  brut_vergi(gv_matrah2, es_artan_net) + es_kalan_brut
+
+    return brut
+
+
+
 
 
 # Kullanıcı Girdileri için Ay Bazında Grup Kutuları
@@ -95,6 +237,7 @@ for i in range(12): # i = ilgili ay, 12 ay için döngü
 
     elif Toplam[i] <= tavan[i]:
         sskm[i] = min(Toplam[i] + devreden1[i] + devreden2[i], tavan[i])
+        
         mtrh_bosluk[i] = tavan[i]- Toplam[i] # İlk matrah boşluğu
         dev_1_mtrh_bosluk[i] = max(mtrh_bosluk[i]-devreden1[i],0) 
         kullan1[i] = min(mtrh_bosluk[i],devreden1[i])
@@ -128,7 +271,7 @@ for i in range(12): # i = ilgili ay, 12 ay için döngü
     ktoplam[i] = kullan1[i] + kullan2[i]
     dtoplam[i] = devreden1[i] + devreden2[i]
 
-    ms_B_brüt[i]=net_to_brut(kvm[i],ms_B[i]) # MS Banka Payı netten brüte çevirme
+    ms_B_brüt[i]=netten_brute(i,kvm[i],sskm[i],ms_B[i]) # MS Banka Payı netten brüte çevirme
     ms_B_dahil_toplam_brüt[i]= Toplam[i] + ms_B_brüt[i] # Brüt ücretler + Brüt MS Banka Payı
 
     if (Aylık[i] + mt.ceil(Aylık[i]/3) + Tazm_Top[i]) >= tavan[i]:
@@ -228,18 +371,3 @@ st.table(tablo)
 st.table(tablo_ms)
 
 st.table(tablo_mt)
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
