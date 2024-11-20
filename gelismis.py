@@ -416,7 +416,7 @@ for i in range(12): # i = ilgili ay, 12 ay için döngü
     sskm[i], kvm[i] = ucret_sonrasi_yeni_sgkm_ve_kum_gv(sskm[i],kvm[i],jest_brut[i],tavan[i]) #Jestiyon sonrası matrahlar
 
     ms_B_brüt[i]= netten_brute(i,kvm[i],sskm[i],ms_B[i], Banka_Pay = 1)
-    Toplam_Ms_Dahil[i]= Toplam[i] + ms_B_brüt[i]  # toplam tutarlara ms banka brüt ekleme
+    Toplam_Ms_Dahil[i]= round(Toplam[i] + ms_B_brüt[i],2)  # toplam tutarlara ms banka brüt ekleme
     sskm[i], kvm[i] = ucret_sonrasi_yeni_sgkm_ve_kum_gv(sskm[i],kvm[i],ms_B_brüt[i],tavan[i]) #Munzam sandık brüt sonrası matrahlar 
     
     if (Aylık[i] +ikramiye[i] + Tazm_Top[i] + ms_B_brüt[i] + ek_gorev_brut[i]) >= tavan[i]:
