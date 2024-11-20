@@ -412,7 +412,7 @@ for i in range(12): # i = ilgili ay, 12 ay için döngü
     sskm[i], kvm[i] = ucret_sonrasi_yeni_sgkm_ve_kum_gv(sskm[i],kvm[i],ek_gorev_brut[i],tavan[i]) #Ek görev sonrası matrahlar
 
     jest_brut[i]=netten_brute(i,kvm[i],sskm[i],jest[i])
-    Toplam[i] = Toplam_Brut_Ekgorev[i] + jest_brut[i] # jest brüt tutarını ek görevli brütlere ekleme
+    Toplam[i] = round(Toplam_Brut_Ekgorev[i] + jest_brut[i],2) # jest brüt tutarını ek görevli brütlere ekleme
     sskm[i], kvm[i] = ucret_sonrasi_yeni_sgkm_ve_kum_gv(sskm[i],kvm[i],jest_brut[i],tavan[i]) #Jestiyon sonrası matrahlar
 
     ms_B_brüt[i]= netten_brute(i,kvm[i],sskm[i],ms_B[i], Banka_Pay = 1)
