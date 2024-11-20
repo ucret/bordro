@@ -321,8 +321,7 @@ def netten_brute(i,gv_matrah,es_matrah,net, Banka_Pay = None):
     
     if Banka_Pay == None:
       net = max(0,net-(idv[i]+igv[i]))
-    else:
-      break
+
     damga = 0.00759
 
  
@@ -416,7 +415,7 @@ for i in range(12): # i = ilgili ay, 12 ay için döngü
     Toplam[i] = Toplam_Brut_Ekgorev[i] + jest_brut[i] # jest brüt tutarını ek görevli brütlere ekleme
     sskm[i], kvm[i] = ucret_sonrasi_yeni_sgkm_ve_kum_gv(sskm[i],kvm[i],jest_brut[i],tavan[i]) #Jestiyon sonrası matrahlar
 
-    ms_B_brüt[i]= netten_brute(i,kvm[i],sskm[i],ms_B[i],1)
+    ms_B_brüt[i]= netten_brute(i,kvm[i],sskm[i],ms_B[i], Banka_Pay = 1)
     Toplam_Ms_Dahil[i]= Toplam[i] + ms_B_brüt[i]  # toplam tutarlara ms banka brüt ekleme
     sskm[i], kvm[i] = ucret_sonrasi_yeni_sgkm_ve_kum_gv(sskm[i],kvm[i],ms_B_brüt[i],tavan[i]) #Munzam sandık brüt sonrası matrahlar 
     
