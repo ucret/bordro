@@ -317,9 +317,9 @@ def brut_vergi_sgk(kum,net):
 
     return vergi_brutu
 
-def netten_brute(i,gv_matrah,es_matrah,net, Banka_Pay = None):
+def netten_brute(i,gv_matrah,es_matrah,net, indirim = None):
     
-    if Banka_Pay == None:
+    if indirim == 1:
       net = max(0,net-(idv[i]+igv[i]))
 
     damga = 0.00759
@@ -407,15 +407,23 @@ for i in range(12): # i = ilgili ay, 12 ay için döngü
     Toplam_brut[i] = Aylık[i] +ikramiye[i] + Tazm_Top[i] + ilave[i] #toplam brüt ücretler
     sskm[i], kvm[i] = ucret_sonrasi_yeni_sgkm_ve_kum_gv(sskm[i],kvm[i],Toplam_brut[i],tavan[i]) # Brüt ücretler sonrası matrahlar
 
-    ek_gorev_brut[i]= netten_brute(i,kvm[i],sskm[i],ek_gorev[i])
+    ind = None
+    if Toplam_brut[i] ==0:
+     ind = 1
+ 
+    ek_gorev_brut[i]= netten_brute(i,kvm[i],sskm[i],ek_gorev[i], indirim = ind)
     Toplam_Brut_Ekgorev[i]= Toplam_brut[i] +  ek_gorev_brut[i] # topmlam brütlere ek görev'in brütünü ekleme
     sskm[i], kvm[i] = ucret_sonrasi_yeni_sgkm_ve_kum_gv(sskm[i],kvm[i],ek_gorev_brut[i],tavan[i]) #Ek görev sonrası matrahlar
 
+    
+    
     jest_brut[i]=netten_brute(i,kvm[i],sskm[i],jest[i])
     Toplam[i] = round(Toplam_Brut_Ekgorev[i] + jest_brut[i],2) # jest brüt tutarını ek görevli brütlere ekleme
     sskm[i], kvm[i] = ucret_sonrasi_yeni_sgkm_ve_kum_gv(sskm[i],kvm[i],jest_brut[i],tavan[i]) #Jestiyon sonrası matrahlar
 
-    ms_B_brüt[i]= netten_brute(i,kvm[i],sskm[i],ms_B[i], Banka_Pay = 1)
+
+   
+    ms_B_brüt[i]= netten_brute(i,kvm[i],sskm[i],ms_B[i])
     Toplam_Ms_Dahil[i]= round(Toplam[i] + ms_B_brüt[i],2)  # toplam tutarlara ms banka brüt ekleme
     sskm[i], kvm[i] = ucret_sonrasi_yeni_sgkm_ve_kum_gv(sskm[i],kvm[i],ms_B_brüt[i],tavan[i]) #Munzam sandık brüt sonrası matrahlar 
     
