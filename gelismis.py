@@ -438,9 +438,9 @@ for i in range(12): # i = ilgili ay, 12 ay için döngü
     sskm[i], kvm[i], matrah_artigi_a,matrah_artigi_b = ucret_sonrasi_yeni_sgkm_ve_kum_gv(sskm[i],kvm[i],Toplam_brut[i],tavan[i]) # Brüt ücretler sonrası matrahlar
     matrah_artigi_1[i],matrah_artigi_2[i] = matrah_artigi_topla(matrah_artigi_a,matrah_artigi_b)
     
-    ind = None
-    if Toplam_brut[i] ==0:
-     ind = 1
+    #ind = None
+    #if Toplam_brut[i] ==0:
+     #ind = 1
  
     ek_gorev_brut[i]= netten_brute(i,kvm[i],sskm[i],ek_gorev[i], indirim = ind)
     Toplam_Brut_Ekgorev[i]= Toplam_brut[i] +  ek_gorev_brut[i] # topmlam brütlere ek görev'in brütünü ekleme
