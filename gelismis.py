@@ -76,6 +76,12 @@ mtrh_bosluk= [0]*12
 
 dev_1_mtrh_bosluk= [0]*12
 
+matrah_artigi_1=[0]*12
+matrah_artigi_2=[0]*12
+
+
+
+
 net = [0]*12 # net gelir
 net_msli = [0] * 12 
 net_mscli = [0] * 12
@@ -390,43 +396,66 @@ for i, ay in enumerate(aylar):
 
  
 
-def ucret_sonrasi_yeni_sgkm_ve_kum_gv(sgk_onceki_matrah,onceki_gelir_vergi_matrahi,ucret,asgari_tavan): #önceki ay demek değil, hesaplama önceliği
+def ucret_sonrasi_yeni_sgkm_ve_kum_gv(sgk_onceki_matrah,onceki_gelir_vergi_matrahi,ucret,asgari_tavan,devreden_tipi=1): #önceki ay demek değil, hesaplama önceliği
+    #devreden tipi (1,2,3) = 1 çalışan ödediği durum, 2 Banka ödediği durum, 3 devretmeyen durum
     sgk_matrah = min(asgari_tavan,ucret)
+    matrah_artigi= max((sgk_onceki_matrah+ucret) - asgari_tavan,0)
+
     matrah_bosluk= min(ucret, max(0,asgari_tavan - sgk_onceki_matrah))
     yeni_sgk_matrah = sgk_onceki_matrah + matrah_bosluk 
     esis_kesinti = matrah_bosluk * 0.15
 
     gelir_vergi_matrahi = ucret-esis_kesinti
     kum_gelir_vergi_matrahi = gelir_vergi_matrahi + onceki_gelir_vergi_matrahi 
-    return yeni_sgk_matrah,kum_gelir_vergi_matrahi
     
+    if devreden_tipi==1:
+        matrah_artigi_calisan=matrah_artigi
+        matrah_artigi_banka=0
+    elif devreden_tipi==2:
+        matrah_artigi_banka=matrah_artigi
+        matrah_artigi_calisan=0
+    else:
+        matrah_artigi_banka=0
+        matrah_artigi_calisan=0
+        
+    return yeni_sgk_matrah,kum_gelir_vergi_matrahi,matrah_artigi_calisan,matrah_artigi_banka
 
+def matrah_artigi_topla(a,b):
+    a+=a
+    b+=b
+    return a,b
+    
 
 for i in range(12): # i = ilgili ay, 12 ay için döngü
     
     Toplam_brut[i] = Aylık[i] +ikramiye[i] + Tazm_Top[i] + ilave[i] #toplam brüt ücretler
-    sskm[i], kvm[i] = ucret_sonrasi_yeni_sgkm_ve_kum_gv(sskm[i],kvm[i],Toplam_brut[i],tavan[i]) # Brüt ücretler sonrası matrahlar
-
+    sskm[i], kvm[i], matrah_artigi_a,matrah_artigi_b = ucret_sonrasi_yeni_sgkm_ve_kum_gv(sskm[i],kvm[i],Toplam_brut[i],tavan[i]) # Brüt ücretler sonrası matrahlar
+    matrah_artigi_1[i],matrah_artigi_2[i] = matrah_artigi_topla(matrah_artigi_a,matrah_artigi_b)
+    
     ind = None
     if Toplam_brut[i] ==0:
      ind = 1
  
     ek_gorev_brut[i]= netten_brute(i,kvm[i],sskm[i],ek_gorev[i], indirim = ind)
     Toplam_Brut_Ekgorev[i]= Toplam_brut[i] +  ek_gorev_brut[i] # topmlam brütlere ek görev'in brütünü ekleme
-    sskm[i], kvm[i] = ucret_sonrasi_yeni_sgkm_ve_kum_gv(sskm[i],kvm[i],ek_gorev_brut[i],tavan[i]) #Ek görev sonrası matrahlar
+    sskm[i], kvm[i], matrah_artigi_1[i],matrah_artigi_2[i] = ucret_sonrasi_yeni_sgkm_ve_kum_gv(sskm[i],kvm[i],ek_gorev_brut[i],tavan[i],2) #Ek görev sonrası matrahlar
+    matrah_artigi_1[i],matrah_artigi_2[i] = matrah_artigi_topla(matrah_artigi_a,matrah_artigi_b)
 
     if ind == 1 and ek_gorev_brut[i]>0:
      ind = None
     
     jest_brut[i]=netten_brute(i,kvm[i],sskm[i],jest[i], indirim = ind)
     Toplam[i] = round(Toplam_Brut_Ekgorev[i] + jest_brut[i],2) # jest brüt tutarını ek görevli brütlere ekleme
-    sskm[i], kvm[i] = ucret_sonrasi_yeni_sgkm_ve_kum_gv(sskm[i],kvm[i],jest_brut[i],tavan[i]) #Jestiyon sonrası matrahlar
-
-
-   
+    sskm[i], kvm[i], matrah_artigi_1[i],matrah_artigi_2[i] = ucret_sonrasi_yeni_sgkm_ve_kum_gv(sskm[i],kvm[i],jest_brut[i],tavan[i],2) #Jestiyon sonrası matrahlar
+    matrah_artigi_1[i],matrah_artigi_2[i] = matrah_artigi_topla(matrah_artigi_a,matrah_artigi_b)
+    
     ms_B_brüt[i]= netten_brute(i,kvm[i],sskm[i],ms_B[i])
     Toplam_Ms_Dahil[i]= round(Toplam[i] + ms_B_brüt[i],2)  # toplam tutarlara ms banka brüt ekleme
-    sskm[i], kvm[i] = ucret_sonrasi_yeni_sgkm_ve_kum_gv(sskm[i],kvm[i],ms_B_brüt[i],tavan[i]) #Munzam sandık brüt sonrası matrahlar 
+    sskm[i], kvm[i], matrah_artigi_1[i],matrah_artigi_2[i] = ucret_sonrasi_yeni_sgkm_ve_kum_gv(sskm[i],kvm[i],ms_B_brüt[i],tavan[i],3) #Munzam sandık brüt sonrası matrahlar 
+    matrah_artigi_1[i],matrah_artigi_2[i] = matrah_artigi_topla(matrah_artigi_a,matrah_artigi_b)
+
+
+    # -- Devreden hesaplama ---- 
     
     if (Aylık[i] +ikramiye[i] + Tazm_Top[i] + ms_B_brüt[i] + ek_gorev_brut[i]) >= tavan[i]:
         sskm[i]=tavan[i]
