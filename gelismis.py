@@ -64,9 +64,9 @@ devreden1 = [0]*14 #birinci devreden matrah
 
 devreden2 = [0]*14 #ikinci devreden matrah
 
-devreden1_kullanılan = [0]*14 # 1. devreden matrahtan kullanılan
+devreden1_kullanılan = [0]*12 # 1. devreden matrahtan kullanılan
 
-devreden2_kullanılan = [0]*14 # 2. devreden matrahtan kullanılan
+devreden2_kullanılan = [0]*12 # 2. devreden matrahtan kullanılan
 
 dtoplam = [0] *12  #devreden toplam
 
