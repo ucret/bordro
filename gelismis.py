@@ -25,7 +25,7 @@ jest_brut = [0]*12 #Jestiyon brüt
 ms_B=[0]*12 # Munzam Sandik Banka payı
 ms_B_brüt=[0]*12 # Brütleştirilmiş MS Banka Payı
 
-kvm = [0,1,2,3,4,5,6,7,8,9,10,11,12] #kümulatif gelir matrahı
+kvm = [0,1,2,3,4,5,6,7,8,9,10,11,12,13] #kümulatif gelir matrahı
 
 vm = [0]*12 # vergi matrahı
 
@@ -60,13 +60,13 @@ igv = [2550.32,2550.32,2550.32,2550.32,2550.32,2550.32,3001.06,3400.42,3400.42,3
 
 tavan = [20002.5 * 7.5 if i < 6 else 20002.5 * 7.5 for i in range(12)] #Emekli sandığı tavanı
 
-devreden1 = [0,0,0,0,0,0,0,0,0,0,0,0,0] #birinci devreden matrah
+devreden1 = [0]*14 #birinci devreden matrah
 
-devreden2 = [0,0,0,0,0,0,0,0,0,0,0,0,0] #ikinci devreden matrah
+devreden2 = [0]*14 #ikinci devreden matrah
 
-devreden1_kullanılan = [0,0,0,0,0,0,0,0,0,0,0,0] # 1. devreden matrahtan kullanılan
+devreden1_kullanılan = [0]*14 # 1. devreden matrahtan kullanılan
 
-devreden2_kullanılan = [0,0,0,0,0,0,0,0,0,0,0,0] # 2. devreden matrahtan kullanılan
+devreden2_kullanılan = [0]*14 # 2. devreden matrahtan kullanılan
 
 dtoplam = [0] *12  #devreden toplam
 
@@ -76,10 +76,16 @@ mtrh_bosluk= [0]*12
 
 dev_1_mtrh_bosluk= [0]*12
 
-matrah_artigi_1=[0]*12
-matrah_artigi_2=[0]*12
-
-
+matrah_artigi_1=[0]*14
+matrah_artigi_2=[0]*14
+devreden1c = [0]*14
+devreden2c = [0]*14
+devreden1b = [0]*14
+devreden2b = [0]*14
+devreden1c_kullanılan = [0]*14
+devreden2c_kullanılan = [0]*14
+devreden1b_kullanılan = [0]*14
+devreden2b_kullanılan = [0]*14
 
 
 net = [0]*12 # net gelir
@@ -465,21 +471,32 @@ for i in range(12): # i = ilgili ay, 12 ay için döngü
         sskm_bosluk= tavan[i] - sskm[i]
         
         devreden2_kullanılan[i] = min(sskm_bosluk,devreden2[i])
+        devreden2c_kullanılan[i] = min(devreden2_kullanılan[i],devreden2c[i]) #ilk çalışan tarafından kullanılan hesaplanır
+        devreden2b_kullanılan[i] = max(0,devreden2_kullanılan[i] - devreden2c_kullanılan[i]) #banka tarafından ödenen kullanılan hesaplanır.
         sskm_bosluk= sskm_bosluk - devreden2_kullanılan[i]
-        
-
-        devreden1_kullanılan[i] = min(sskm_bosluk,devreden1[i])
-        sskm_bosluk = sskm_bosluk - devreden1_kullanılan[i] 
+     
+        devreden1_kullanılan[i] = min(sskm_bosluk,devreden1[i]) 
+        devreden1c_kullanılan[i] = min(devreden1_kullanılan[i],devreden1c[i]) #ilk çalışan tarafından kullanılan hesaplanır
+        devreden1b_kullanılan[i] = max(0,devreden1_kullanılan[i] - devreden1c_kullanılan[i]) 
+        sskm_bosluk = sskm_bosluk - devreden1_kullanılan[i]
+     
         devreden2[i] = max(0,devreden2[i])
         devreden2[i+1] = devreden2[i+1] - devreden1_kullanılan[i]
+        devreden2c[i+1] = devreden2c[i+1] - devreden1c_kullanılan[i]
+        devreden2b[i+1] = devreden2b[i+1] - devreden1b_kullanılan[i]
+     
+        sskm[i] = sskm[i] + devreden1_kullanılan[i] + devreden2_kullanılan[i] - devreden1b_kullanılan[i] - devreden2b_kullanılan[i]
 
-        sskm[i] = sskm[i] + devreden1_kullanılan[i] + devreden2_kullanılan[i]
+ 
     elif Toplam_Ms_Dahil[i] > tavan[i]:
         sskm[i]=tavan[i] 
-        devreden1[i+1] = Toplam[i] - tavan[i] 
-        devreden2[i+2] = Toplam[i] - tavan[i] 
-    
-    
+        devreden1[i+1] = matrah_artigi_1[i] + matrah_artigi_2[i]
+        devreden2[i+2] = matrah_artigi_1[i] + matrah_artigi_2[i]
+        devreden1c[i+1] = matrah_artigi_1[i]
+        devreden2c[i+2] = matrah_artigi_1[i]
+        devreden1b[i+1] = matrah_artigi_2[i]
+        devreden2b[i+2] = matrah_artigi_2[i]
+ 
     sske[i] = min(Toplam_Ms_Dahil[i],round(sskm[i]*0.14,2))
     sski[i] = min(Toplam_Ms_Dahil[i],round(sskm[i]*0.01,2))
     dv[i] = round(Toplam_Ms_Dahil[i]*0.00759,2)
@@ -559,7 +576,7 @@ tablo_ms = pd.DataFrame(dic_vrb, index=["Ocak","Şubat", "Mart","Nisan","Mayıs"
 
  
 
-tablo_mt = pd.DataFrame(dic_13, index=[0,1,2,3,4,5,6,7,8,9,10,11,12])
+tablo_mt = pd.DataFrame(dic_13, index=[0,1,2,3,4,5,6,7,8,9,10,11,12,13])
  
 
 ortalamat = tablo.mean() #ortalama ödenen satırı
