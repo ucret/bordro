@@ -10,7 +10,7 @@ import math as mt
 
 Aylık = [0]*12 #Aylık Ücret
 onceki_aylik=[0]*13
-onceki_aylik = [0] = 33000
+onceki_aylik[0] = 33000
 Tazm_Top = [0]*12 # Aylık ücret dışındaki Tazminatlar toplamı
 ilave = [0]*12 #Ay içinde ödenen değişken ücret- brüt
 ikramiye =[0]*12 #İkramiye
