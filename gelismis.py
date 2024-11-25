@@ -266,8 +266,8 @@ for i, ay in enumerate(aylar):
 
 def sandik_isleri(i,aylik_once,aylik):
     if aylik_once < aylik:
-        ms_C[i] = round((aylik + aylik)*0.07,2) 
-        ms_B[i] = round((aylik + aylik)*0.15,2)
+        ms_C[i] = round((aylik + mt.ceil(aylik/3))*0.07,2) 
+        ms_B[i] = round((aylik + mt.ceil(aylik/3))*0.15,2)
     else:
         ms_C[i]= (aylik_once + mt.ceil(aylik/3))*0.07
         ms_yukselme_C_net[i]= aylik - aylik_once
