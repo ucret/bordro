@@ -235,8 +235,8 @@ aylar = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağu
  
 st.sidebar.header("Kullanıcı Girdileri")
 with st.sidebar.expander("Aralık Ayı Ücretleriniz ve Zam Uygulaması"):
-    onceki_aylik[0] = st.number_input("Aralık Ayı Aylık Ücretiniz (Brüt TL):", min_value=33000, step=100.0) # i=0: Aralık Ayı indeksi
-    aralik_tazm=st.number_input("Aralık Ayı Tazminat Toplamınız (Brüt TL):", min_value=0.0, step=100.0) 
+    onceki_aylik[0] = st.number_input("Aralık Ayı Aylık Ücretiniz (Brüt TL):", min_value=0, value = 33000, step=1000) # i=0: Aralık Ayı indeksi
+    aralik_tazm=st.number_input("Aralık Ayı Tazminat Toplamınız (Brüt TL):", min_value=0, step=1000) 
     zam=st.button("Zam uygula")
     
 if zam==True:
