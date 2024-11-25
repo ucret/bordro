@@ -25,7 +25,7 @@ jest_brut = [0]*12 #Jestiyon brüt
 ms_B=[0]*12 # Munzam Sandik Banka payı
 ms_B_brüt=[0]*12 # Brütleştirilmiş MS Banka Payı
 
-kvm = [0,1,2,3,4,5,6,7,8,9,10,11,12,13] #kümulatif gelir matrahı
+kvm = [0]*14 #kümulatif gelir matrahı
 
 vm = [0]*12 # vergi matrahı
 
@@ -90,7 +90,7 @@ devreden2b_kullanılan = [0]*14
 
 net = [0]*12 # net gelir
 net_msli = [0] * 12 
-net_mscli = [0] * 12
+net_mscli = [0] * 12 # 
 
 
 gv = [0]*12 # gelir vergisi
@@ -100,68 +100,37 @@ gv_MS_B_Dahil = [0]*12
  
 
 def ms_es_banka(toplam, tavan):
-
     if toplam < tavan:
-
         return toplam * 0.2275
-
     else:
-
         return tavan * 0.2275  
 
-def vergi(kum, matrah): # Vergi hesaplama fonksiyonu, Kümulatif matrah ve aylık matrah
+def vergi(kum, matrah):  # Vergi hesaplama fonksiyonu (doğru çalışan versiyon)
+    v = [110000, 230000, 870000, 3000000]  # Vergi dilimleri
+    o = [0.15, 0.2, 0.27, 0.35, 0.4]  # Vergi oranları
+    kalan_matrah = matrah  # Kalan matrah miktarı
+    toplam_vergi = 0  # Toplam vergi
+    
+    # İlk dilimden başla ve sırasıyla diğer dilimlere geç
+    for i in range(len(v)):
+        # Bulunduğumuz dilimde ne kadar matrah kullanabiliriz?
+        dilim_matrah = max(0, min(kalan_matrah, v[i] - kum))
+        # Bu dilim için ödenecek vergiyi hesapla
+        toplam_vergi += dilim_matrah * o[i]
+        # Kalan matrahtan bu dilimdekini düş
+        kalan_matrah -= dilim_matrah
+        # Kümülatif matrahı güncelle
+        kum += dilim_matrah
+        # Eğer kalan matrah sıfırlandıysa döngüyü sonlandır
+        if kalan_matrah <= 0:
+            break
+    
+    # Eğer matrah en üst dilimlere giriyorsa, kalan matrah için oranı uygula
+    if kalan_matrah > 0:
+        toplam_vergi += kalan_matrah * o[-1]
+    
+    return toplam_vergi
 
- 
-
-    v = [110000,230000,870000,3000000] # vergi dilimleri
-
- 
-
-    o = [0.15,0.2,0.27,0.35,0.4] #vergi oranları
-
- 
-
-    t= kum + matrah #ara kümulatif matrah
-
- 
-
-    if t <= v[0]:
-
- 
-
-       return matrah*o[0]
-
- 
-
-    elif t <= v[1]:
-
- 
-
-       return max((v[0]-kum),0)*o[0] + (matrah-max((v[0]-kum),0))*o[1]
-
- 
-
-    elif t <= v[2]:
-
- 
-
-       return max((v[0]-kum),0)*o[0] + max((v[1]-kum),0)*o[1] + (matrah-max((v[1]-kum),0)-max((v[0]-kum),0))*o[2]
-
- 
-
-    elif t <= v[3]:
-
- 
-
-        return max((v[0]-kum),0)*o[0] + max((v[1]-kum),0)*o[1] + max((v[2]-kum),0)*o[2] + (matrah-max((v[2]-kum),0)-max((v[1]-kum),0)- max((v[0]-kum),0))*o[3]
-
- 
-
-    else:
-
- 
-
-       return max((v[0]-kum),0)*o[0] + max((v[1]-kum),0)*o[1] + max((v[2]-kum),0)*o[2] + max((v[3]-kum),0)*o[3]+ (matrah-max((v[3]-kum),0)-max((v[2]-kum),0)-max((v[1]-kum),0)-max((v[0]-kum),0))*o[4]
 
 def brut_vergi(kum,net):
     v = [110000,230000,870000,3000000] # vergi dilimleri
@@ -174,131 +143,43 @@ def brut_vergi(kum,net):
         if i == 0:     
             v_brut_bosluk[i] = max(v[i]-kum,0)          
         else:
-
- 
-
             v_brut_bosluk[i] = max (v[i]-kum-v_brut_bosluk[i-1],0)
 
- 
-
     for i in  range(len(v)):
-
- 
-
         v_net_bosluk[i] =  v_brut_bosluk[i]*(1-o[i]-damga)
 
- 
-
     if net - v_net_bosluk[0] <= 0:
-
- 
-
-        vergi_brutu = net/(1-o[0]-damga)
-
- 
-
+        vergi_brutu = net/(1-o[0]-damga) 
     elif net - sum(v_net_bosluk[:2]) <= 0:
-
- 
-
         vergi_brutu = v_brut_bosluk[0]+ (net-v_net_bosluk[0])/(1-o[1]-damga)
-
- 
-
     elif net - sum(v_net_bosluk[:3]) <= 0:
-
- 
-
         vergi_brutu = sum(v_brut_bosluk[:2])+ (net-sum(v_net_bosluk[:2]))/(1-o[2]-damga)
-
- 
-
     elif net - sum(v_net_bosluk[:4]) <= 0:
-
- 
-
         vergi_brutu = sum(v_brut_bosluk[:3])+ (net-sum(v_net_bosluk[:3]))/(1-o[3]-damga)
-
- 
-
     else:
-
- 
-
-         vergi_brutu = sum(v_brut_bosluk[:4])+ (net-sum(v_net_bosluk[:4]))/(1-o[4]-damga)     
-
- 
-
+         vergi_brutu = sum(v_brut_bosluk[:4])+ (net-sum(v_net_bosluk[:4]))/(1-o[4]-damga)  
     return vergi_brutu
 
 def brut_vergi_sgk(kum,net):
-
- 
-
     v = [110000,230000,870000,3000000] # vergi dilimleri
-
- 
-
     o = [0.15,0.2,0.27,0.35,0.4] #vergi oranları
-
- 
-
     damga = 0.00759
-
- 
-
     v_brut_bosluk = [0,0,0,0]
-
- 
-
     v_net_bosluk = [0,0,0,0]
-
- 
-
     vergi_brutu = 0
 
- 
-
     for i in range(len(v)):
-
- 
-
         if i == 0:     
-
- 
-
-            v_brut_bosluk[i] = max(v[i]-kum,0)/0.85        
-
- 
-
+            v_brut_bosluk[i] = max(v[i]-kum,0)/0.85   
         else:
-
- 
-
             v_brut_bosluk[i] = max (v[i]-kum-v_brut_bosluk[i-1],0)/0.85
 
- 
-
     for i in  range(len(v)):
-
- 
-
         v_net_bosluk[i] =  v_brut_bosluk[i]*((0.85)*(1-o[i])-damga)
 
- 
-
     if net - v_net_bosluk[0] <= 0:
-
- 
-
         vergi_brutu = net/((1-o[0])*0.85-damga)
-
- 
-
     elif net - sum(v_net_bosluk[:2]) <= 0:
-
- 
-
         vergi_brutu = v_brut_bosluk[0]+ (net-v_net_bosluk[0])/((1-o[1])*0.85-damga)
 
  
@@ -333,43 +214,15 @@ def netten_brute(i,gv_matrah,es_matrah,net, indirim = None):
     
     if indirim == 1:
       net = max(0,net-(idv[i]+igv[i]))
-
     damga = 0.00759
-
- 
-
     es_kalan_brut = tavan[i]-es_matrah
-
- 
-
     es_kalan_net = es_kalan_brut-vergi(gv_matrah,es_kalan_brut * 0.85 ) - es_kalan_brut * damga -  es_kalan_brut*0.15
-
- 
-
     if es_kalan_net >= net:
-
- 
-
-        brut = brut_vergi_sgk(gv_matrah, net)
-
- 
-
+        brut = brut_vergi_sgk(gv_matrah, net) 
     else:
-
- 
-
         es_artan_net = net-es_kalan_net
-
- 
-
         gv_matrah2 = es_kalan_brut*0.85 + gv_matrah 
-
- 
-
         brut =  brut_vergi(gv_matrah2, es_artan_net) + es_kalan_brut
-
- 
-
     return brut
 
  
@@ -426,17 +279,22 @@ def ucret_sonrasi_yeni_sgkm_ve_kum_gv(sgk_onceki_matrah,onceki_gelir_vergi_matra
         
     return yeni_sgk_matrah,kum_gelir_vergi_matrahi,matrah_artigi_calisan,matrah_artigi_banka
 
-def matrah_artigi_topla(a,b):
-    a+=a
-    b+=b
-    return a,b
+def matrah_artigi_topla(i,a,b):
+    matrah_artigi_1[i]+=a
+    matrah_artigi_2[i]+=b
+    return matrah_artigi_1[i],matrah_artigi_2[i]
     
 
 for i in range(12): # i = ilgili ay, 12 ay için döngü
     
-    Toplam_brut[i] = Aylık[i] +ikramiye[i] + Tazm_Top[i] + ilave[i] #toplam brüt ücretler
-    sskm[i], kvm[i], matrah_artigi_a,matrah_artigi_b = ucret_sonrasi_yeni_sgkm_ve_kum_gv(sskm[i],kvm[i],Toplam_brut[i],tavan[i]) # Brüt ücretler sonrası matrahlar
-    matrah_artigi_1[i],matrah_artigi_2[i] = matrah_artigi_topla(matrah_artigi_a,matrah_artigi_b)
+    toplam_sabit[i] = Aylık[i] +ikramiye[i] + Tazm_Top[i] #toplam brüt ücretler
+    sskm[i], kvm[i], matrah_artigi_a,matrah_artigi_b = ucret_sonrasi_yeni_sgkm_ve_kum_gv(sskm[i],kvm[i],toplam_sabit[i],tavan[i],3) # Brüt ücretler sonrası matrahlar
+    matrah_artigi_1[i],matrah_artigi_2[i] = matrah_artigi_topla(i,matrah_artigi_a,matrah_artigi_b)
+    
+
+    Toplam_brut[i] = toplam_sabit[i] + ilave[i] #toplam brüt ücretler
+    sskm[i], kvm[i], matrah_artigi_a,matrah_artigi_b = ucret_sonrasi_yeni_sgkm_ve_kum_gv(sskm[i],kvm[i],ilave[i],tavan[i],1) # Brüt ücretler sonrası matrahlar
+    matrah_artigi_1[i],matrah_artigi_2[i] = matrah_artigi_topla(i,matrah_artigi_a,matrah_artigi_b)
     
     ind = None
     if Toplam_brut[i] ==0:
@@ -444,26 +302,26 @@ for i in range(12): # i = ilgili ay, 12 ay için döngü
  
     ek_gorev_brut[i]= netten_brute(i,kvm[i],sskm[i],ek_gorev[i], indirim = ind)
     Toplam_Brut_Ekgorev[i]= Toplam_brut[i] +  ek_gorev_brut[i] # topmlam brütlere ek görev'in brütünü ekleme
-    sskm[i], kvm[i], matrah_artigi_1[i],matrah_artigi_2[i] = ucret_sonrasi_yeni_sgkm_ve_kum_gv(sskm[i],kvm[i],ek_gorev_brut[i],tavan[i],2) #Ek görev sonrası matrahlar
-    matrah_artigi_1[i],matrah_artigi_2[i] = matrah_artigi_topla(matrah_artigi_a,matrah_artigi_b)
+    sskm[i], kvm[i], matrah_artigi_a,matrah_artigi_b = ucret_sonrasi_yeni_sgkm_ve_kum_gv(sskm[i],kvm[i],ek_gorev_brut[i],tavan[i],2) #Ek görev sonrası matrahlar
+    matrah_artigi_1[i],matrah_artigi_2[i] = matrah_artigi_topla(i,matrah_artigi_a,matrah_artigi_b)
 
     if ind == 1 and ek_gorev_brut[i]>0:
      ind = None
     
     jest_brut[i]=netten_brute(i,kvm[i],sskm[i],jest[i], indirim = ind)
     Toplam[i] = round(Toplam_Brut_Ekgorev[i] + jest_brut[i],2) # jest brüt tutarını ek görevli brütlere ekleme
-    sskm[i], kvm[i], matrah_artigi_1[i],matrah_artigi_2[i] = ucret_sonrasi_yeni_sgkm_ve_kum_gv(sskm[i],kvm[i],jest_brut[i],tavan[i],2) #Jestiyon sonrası matrahlar
-    matrah_artigi_1[i],matrah_artigi_2[i] = matrah_artigi_topla(matrah_artigi_a,matrah_artigi_b)
+    sskm[i], kvm[i], matrah_artigi_a,matrah_artigi_b = ucret_sonrasi_yeni_sgkm_ve_kum_gv(sskm[i],kvm[i],jest_brut[i],tavan[i],2) #Jestiyon sonrası matrahlar
+    matrah_artigi_1[i],matrah_artigi_2[i] = matrah_artigi_topla(i,matrah_artigi_a,matrah_artigi_b)
     
     ms_B_brüt[i]= netten_brute(i,kvm[i],sskm[i],ms_B[i])
     Toplam_Ms_Dahil[i]= round(Toplam[i] + ms_B_brüt[i],2)  # toplam tutarlara ms banka brüt ekleme
-    sskm[i], kvm[i], matrah_artigi_1[i],matrah_artigi_2[i] = ucret_sonrasi_yeni_sgkm_ve_kum_gv(sskm[i],kvm[i],ms_B_brüt[i],tavan[i],3) #Munzam sandık brüt sonrası matrahlar 
-    matrah_artigi_1[i],matrah_artigi_2[i] = matrah_artigi_topla(matrah_artigi_a,matrah_artigi_b)
+    sskm[i], kvm[i], matrah_artigi_a,matrah_artigi_b = ucret_sonrasi_yeni_sgkm_ve_kum_gv(sskm[i],kvm[i],ms_B_brüt[i],tavan[i],3) #Munzam sandık brüt sonrası matrahlar 
+    matrah_artigi_1[i],matrah_artigi_2[i] = matrah_artigi_topla(i,matrah_artigi_a,matrah_artigi_b)
 
 
     # -- Devreden hesaplama ---- 
     
-    if (Aylık[i] +ikramiye[i] + Tazm_Top[i] + ms_B_brüt[i] + ek_gorev_brut[i]) >= tavan[i]:
+    if (Aylık[i] +ikramiye[i] + Tazm_Top[i] + ms_B_brüt[i]) >= tavan[i]:
         sskm[i]=tavan[i]
     elif Toplam_Ms_Dahil[i]==0:
         sskm[i]=0
@@ -556,7 +414,7 @@ with st.expander("Aylık Ücretler Detayları", expanded=True):
 dic = {"Toplam Brüt Ücret": Toplam,"Toplam MS'Lİ Brüt Ücret": Toplam_Ms_Dahil,"Emekli Sandığı Payı":sske,"Emekli Sandığı İşsizlik Payı":sski,"Devreden Toplam": dtoplam,"Devreden Kullanılan": ktoplam,"Gelir Vergisi":gv,"Damga Vergisi İstisnası":idv,"Vergi İstisnası": igv, 
        "Munzam Çalışan Payı": ms_C,"Net Tutar": net,"Net Tutar (Ms Calısan)": net_mscli,"Net Tutar MS bankalı": net_msli}
 
-dic_vrb={"Toplam sabit brütler": Toplam_brut,"Ek görev brüt": ek_gorev_brut,"jestiyon brüt":jest_brut,"MS Brüt tutar": ms_B_brüt, "MS Net tutar": ms_B,
+dic_vrb={"Toplam sabit brütler": Toplam_brut,"Vergi Matrahı": vm,"Ek görev brüt": ek_gorev_brut,"jestiyon brüt":jest_brut,"MS Brüt tutar": ms_B_brüt, "MS Net tutar": ms_B,
          "devreden1 kullanılan":devreden1_kullanılan,"devreden2 kullanılan":devreden2_kullanılan}
 
 dic_13={"Küm GV": kvm,"Devreden1":devreden1,"Devreden2":devreden2, "çalışan_devreden_1": devreden1c, "çalışan_devreden_2": devreden2c,"Banka_dev_1": devreden1b, "banka dev 2": devreden2b,
