@@ -9,11 +9,9 @@ import math as mt
  
 
 Aylık = [0]*12 #Aylık Ücret
-
+onceki_aylik=[0]*13 
 Tazm_Top = [0]*12 # Aylık ücret dışındaki Tazminatlar toplamı
-
 ilave = [0]*12 #Ay içinde ödenen değişken ücret- brüt
-
 ikramiye =[0]*12 #İkramiye
 
 ek_gorev = [0]*12 #Ek Görev
@@ -21,7 +19,7 @@ ek_gorev_brut = [0]*12 # Ek Görev brüt
 
 jest = [0]*12 #Jestiyon
 jest_brut = [0]*12 #Jestiyon brüt 
- 
+
 ms_B=[0]*12 # Munzam Sandik Banka payı
 ms_B_brüt=[0]*12 # Brütleştirilmiş MS Banka Payı
 
@@ -51,8 +49,10 @@ Toplam_Brut_Ekgorev = [0]*12 # Toplam sabit ücretler (brütler + ek görev) - d
 Toplam_Ms_Dahil=[0]*12
 Toplam = [0]*12 #Toplam Brüt ücret/Jestiyon dahil (Sabit+ Değişken)/Tüm ücretler
 
- 
-
+ms_yukselme_C_net=[0]*12
+ms_yukselme_B_net=[0]*12
+ms_yukselme_C_brut=[0]*12
+ms_yukselme_B_brut=[0]*12
 
  
 
@@ -233,16 +233,24 @@ aylar = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağu
 
  
 st.sidebar.header("Kullanıcı Girdileri")
+with st.sidebar.expander("Aralık Ayı Ücretleriniz ve Zam Uygulaması"):
+    onceki_aylik[0] = st.number_input("Aralık Ayı Aylık Ücretiniz (Brüt TL):", min_value=0.0, step=100.0) # i=0: Aralık Ayı indeksi
+    aralik_tazm=st.number_input("Aralık Ayı Tazminat Toplamınız (Brüt TL):", min_value=0.0, step=100.0) 
+    zam=st.button("Zam uygula")
+    
+if zam==True:
+   Aylık[0]= mt.ceil(onceki_aylik[0] * 1.50)
+else:    
+    Aylık[0]= 33000
 
 for i, ay in enumerate(aylar):
   
     # Kullanıcı girişleri
     with st.sidebar.expander(f"{ay}"):
-        Aylık[i] = st.number_input(f"{ay} Ayı Aylık Ücret (Brüt TL)", step=1000, value=33000 if i == 0 else Aylık[i - 1], key=f"Aylik_{i}")
+        Aylık[i] = st.number_input(f"{ay} Ayı Aylık Ücret (Brüt TL)", value=Aylık[i] if i==0 else Aylık[i - 1], key=f"Aylik_{i}")
 
         ikramiye[i] = mt.ceil(Aylık[i] / 3)
-        ms_C[i] = round((Aylık[i] + mt.ceil(Aylık[i]/3))*0.07,2)
-        ms_B[i] = round((Aylık[i] + mt.ceil(Aylık[i]/3))*0.15,2)
+        
         st.write(f"İkramiye Tutarı: {format(ikramiye[i], ',').replace(',', '.')} TL")
 
         Tazm_Top[i] = st.number_input(f"{ay} Ayı Tazminat Toplamınız (Brüt TL)", step=1000, value=Tazm_Top[i - 1] if i > 0 else 0, key=f"Tazm_Top_{i}")
@@ -252,6 +260,20 @@ for i, ay in enumerate(aylar):
         ek_gorev[i] = st.number_input(f"{ay} Ek Görev Tutarınız (Net TL)", step=1000, value=ek_gorev[i - 1] if i > 0 else 0, key=f"ek_gorev_{i}")
 
         jest[i] = st.number_input(f"{ay} Jestiyon Tutarınız (Net TL)", step=1000, value=0 )
+
+# MS Yükselme payları hesaplama
+
+def sandik_isleri(i,aylik_once,aylik):
+    if aylik_once < aylik:
+        ms_C[i] = round((aylik + aylik)*0.07,2) 
+        ms_B[i] = round((aylik + aylik)*0.15,2)
+    else:
+        ms_C[i]= (aylik_once + mt.ceil(aylik/3))*0.07
+        ms_yukselme_C_net[i]= aylik - aylik_once
+        ms_B[i]= (aylik_once + mt.ceil(aylik/3))*0.15
+        ms_yukselme_B_net[i] = (aylik - aylik_once)*3
+
+
 
  
 
@@ -287,11 +309,14 @@ def matrah_artigi_topla(i,a,b):
 
 for i in range(12): # i = ilgili ay, 12 ay için döngü
     
+    sandik_isleri(i,onceki_aylik[0] if i==0 else Aylık[i-1] ,Aylık[i])
+
+
+
     toplam_sabit[i] = Aylık[i] +ikramiye[i] + Tazm_Top[i] #toplam brüt ücretler
     sskm[i], kvm[i], matrah_artigi_a,matrah_artigi_b = ucret_sonrasi_yeni_sgkm_ve_kum_gv(sskm[i],kvm[i],toplam_sabit[i],tavan[i],3) # Brüt ücretler sonrası matrahlar
     matrah_artigi_1[i],matrah_artigi_2[i] = matrah_artigi_topla(i,matrah_artigi_a,matrah_artigi_b)
     
-
     Toplam_brut[i] = toplam_sabit[i] + ilave[i] #toplam brüt ücretler
     sskm[i], kvm[i], matrah_artigi_a,matrah_artigi_b = ucret_sonrasi_yeni_sgkm_ve_kum_gv(sskm[i],kvm[i],ilave[i],tavan[i],1) # Brüt ücretler sonrası matrahlar
     matrah_artigi_1[i],matrah_artigi_2[i] = matrah_artigi_topla(i,matrah_artigi_a,matrah_artigi_b)
@@ -316,6 +341,11 @@ for i in range(12): # i = ilgili ay, 12 ay için döngü
     ms_B_brüt[i]= netten_brute(i,kvm[i],sskm[i],ms_B[i])
     Toplam_Ms_Dahil[i]= round(Toplam[i] + ms_B_brüt[i],2)  # toplam tutarlara ms banka brüt ekleme
     sskm[i], kvm[i], matrah_artigi_a,matrah_artigi_b = ucret_sonrasi_yeni_sgkm_ve_kum_gv(sskm[i],kvm[i],ms_B_brüt[i],tavan[i],3) #Munzam sandık brüt sonrası matrahlar 
+    matrah_artigi_1[i],matrah_artigi_2[i] = matrah_artigi_topla(i,matrah_artigi_a,matrah_artigi_b)
+
+    ms_yukselme_B_brut[i]= netten_brute(i,kvm[i],sskm[i],ms_yukselme_B_net[i])
+    Toplam_Ms_Dahil[i]= round(Toplam_Ms_Dahil[i] + ms_yukselme_B_brut[i],2)  # toplam tutarlara ms banka brüt ekleme
+    sskm[i], kvm[i], matrah_artigi_a,matrah_artigi_b = ucret_sonrasi_yeni_sgkm_ve_kum_gv(sskm[i],kvm[i],ms_yukselme_B_brut[i],tavan[i],3) #Munzam sandık yükselme brüt sonrası matrahlar 
     matrah_artigi_1[i],matrah_artigi_2[i] = matrah_artigi_topla(i,matrah_artigi_a,matrah_artigi_b)
 
 
@@ -364,7 +394,7 @@ for i in range(12): # i = ilgili ay, 12 ay için döngü
 
     igv[i] = min(gv[i],igv[i])
     idv[i] = min(idv[i],dv[i])
-    net[i] = max(0,round((Toplam_Ms_Dahil[i]-(sske[i]+sski[i]+dv[i]+gv[i]) + igv[i] + idv[i]-ms_C[i]-ms_B[i]),2))
+    net[i] = max(0,round((Toplam_Ms_Dahil[i]-(sske[i]+sski[i]+dv[i]+gv[i]) + igv[i] + idv[i]-ms_C[i]-ms_B[i]-ms_yukselme_C_net[i]-ms_yukselme_B_net[i]),2))
 
     net_msli[i]= round((Toplam_Ms_Dahil[i]-(sske[i]+sski[i]+dv[i]+gv[i]) + igv[i] + idv[i]-ms_C[i]),2)
     net_mscli[i] = round((Toplam_Ms_Dahil[i]-(sske[i]+sski[i]+dv[i]+gv[i]) + igv[i] + idv[i]),2)
@@ -412,10 +442,13 @@ with st.expander("Aylık Ücretler Detayları", expanded=True):
 #sonuç sözlüğü toparlama tablosu
 
 dic = {"Toplam Brüt Ücret": Toplam,"Toplam MS'Lİ Brüt Ücret": Toplam_Ms_Dahil,"Emekli Sandığı Payı":sske,"Emekli Sandığı İşsizlik Payı":sski,"Devreden Toplam": dtoplam,"Devreden Kullanılan": ktoplam,"Gelir Vergisi":gv,"Damga Vergisi İstisnası":idv,"Vergi İstisnası": igv, 
-       "Munzam Çalışan Payı": ms_C,"Net Tutar": net,"Net Tutar (Ms Calısan)": net_mscli,"Net Tutar MS bankalı": net_msli}
+       "Munzam Çalışan Payı": ms_C,"Net Tutar": net,"Net Tutar (Ms Calısan)": net_mscli,"Net Tutar MS bankalı": net_msli,
+       "ms yükselme C net": ms_yukselme_C_net,"ms yükselme B net":ms_yukselme_B_net
+       }
 
 dic_vrb={"Toplam sabit brütler": Toplam_brut,"Vergi Matrahı": vm,"Ek görev brüt": ek_gorev_brut,"jestiyon brüt":jest_brut,"MS Brüt tutar": ms_B_brüt, "MS Net tutar": ms_B,
-         "devreden1 kullanılan":devreden1_kullanılan,"devreden2 kullanılan":devreden2_kullanılan}
+         "devreden1 kullanılan":devreden1_kullanılan,"devreden2 kullanılan":devreden2_kullanılan
+         }
 
 dic_13={"Küm GV": kvm,"Devreden1":devreden1,"Devreden2":devreden2, "çalışan_devreden_1": devreden1c, "çalışan_devreden_2": devreden2c,"Banka_dev_1": devreden1b, "banka dev 2": devreden2b,
        "artan_matra" : matrah_artigi_1, "artan_matrah": matrah_artigi_2}
