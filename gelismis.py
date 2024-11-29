@@ -274,7 +274,31 @@ def sandik_isleri(i,aylik_once,aylik):
         ms_B[i]= (aylik_once + mt.ceil(aylik/3))*0.15
         ms_yukselme_B_net[i] = (aylik - aylik_once)*3
 
+def netten_brute_yemek(i,gv_matrah,es_matrah,net, indirim = None):
+    
 
+    damga = 0.00759
+    es_kalan_brut = max(tavan[i]-es_matrah,0)
+    vergisiz_kalan = es_kalan_brut * 0.85
+    vergisiz_sgklı = yemek_GV_istisna[i] - yemek_ESIS_istisna[i]
+    tavanı_asan_net = max(vergisiz_sgklı - vergisiz_kalan,0)
+    sgk_vergisiz_kullanılan = min(vergisiz_sgklı/0.85, es_kalan_brut)
+    sgk_tutar = sgk_vergisiz_kullanılan * 0.15
+    eklenecek_tutar = tavanı_asan_net + sgk_vergisiz_kullanılan
+    
+    es_kalan_brut -= sgk_vergisiz_kullanılan 
+    
+    es_kalan_net = es_kalan_brut-vergi(gv_matrah,es_kalan_brut * 0.85 ) - es_kalan_brut * damga -  es_kalan_brut*0.15
+    net -= yemek_GV_istisna[i]
+    
+    
+    if es_kalan_net >= net:
+        brut = brut_vergi_sgk(gv_matrah, net) + yemek_ESIS_istisna[i] + eklenecek_tutar
+    else:
+        es_artan_net = net-es_kalan_net
+        gv_matrah2 = es_kalan_brut*0.85 + gv_matrah 
+        brut =  brut_vergi(gv_matrah2, es_artan_net) + es_kalan_brut + yemek_ESIS_istisna[i] + eklenecek_tutar
+    return brut
 
  
 
