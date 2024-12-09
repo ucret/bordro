@@ -701,4 +701,4 @@ with st.expander("Yıllık Ücret Dağılımı", expanded=False):
 
     # Streamlit üzerinden Donut Chart gösterimi
     st.altair_chart(donut_chart, use_container_width=True)
-st.html(view-source:file:///C:/Users/103418/AppData/Local/Microsoft/Windows/INetCache/Content.Outlook/VWF4X9R7/Bordro.html)
+
