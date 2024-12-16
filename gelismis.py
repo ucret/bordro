@@ -414,98 +414,98 @@ def page2():
      else:
          st.write("Hiç tablo bulunamadı.")
 
+
+ def veri_getir(bordro_kalem): #Tüm tablolarda veri getirir     
+     tutar=0
+     for table in soup.find_all('table'):
+         for row in table.find_all('tr'):
+             cells = row.find_all('td')
+             if len(cells) > 1:
+                 key = cells[0].get_text(strip=True)
+                 value = cells[1].get_text(strip=True).replace(",", "")
+                 try:
+                     value = float(value)  # Sayısal bir değer olup olmadığını kontrol et
+                     if key in bordro_kalem :
+                         tutar = value
+                 except ValueError:
+                     continue
+     return tutar
+ 
+ def veri_getir_ucrettablosu(bordro_kalem): #Ücretler toplamı tablosundaki kalemlerden veri getirme     
+     tutar=0
+     for row in tables[3].find_all('tr'):
+         cells = row.find_all('td')
+         if len(cells) > 1:
+             key = cells[0].get_text(strip=True)
+             value = cells[1].get_text(strip=True).replace(",", "")
+             try:
+                 value = float(value)  # Sayısal bir değer olup olmadığını kontrol et
+                 if key in bordro_kalem :
+                     tutar += value
+             except ValueError:
+                 continue
+     return tutar
+ 
+ def veri_getir_kesintitablosu(bordro_kalem): #Kesintiler tablosundaki kalemlerden veri getirme     
+     tutar=0
+     for row in tables[4].find_all('tr'):
+         cells = row.find_all('td')
+         if len(cells) > 1:
+             key = cells[0].get_text(strip=True)
+             value = cells[1].get_text(strip=True).replace(",", "")
+             try:
+                 value = float(value)  # Sayısal bir değer olup olmadığını kontrol et
+                 if key in bordro_kalem:
+                     tutar += value
+             except ValueError:
+                 continue
+     return tutar
+ 
+ 
+ 
+ 
  yuklenen_bordro_ay=int(table_bordro[1].loc[4,1].split('-')[1].split('/')[0]) # Kullanıcının yüklediği bordronun ay bilgisi
-def veri_getir(bordro_kalem): #Tüm tablolarda veri getirir     
-    tutar=0
-    for table in soup.find_all('table'):
-        for row in table.find_all('tr'):
-            cells = row.find_all('td')
-            if len(cells) > 1:
-                key = cells[0].get_text(strip=True)
-                value = cells[1].get_text(strip=True).replace(",", "")
-                try:
-                    value = float(value)  # Sayısal bir değer olup olmadığını kontrol et
-                    if key in bordro_kalem :
-                        tutar = value
-                except ValueError:
-                    continue
-    return tutar
-
-def veri_getir_ucrettablosu(bordro_kalem): #Ücretler toplamı tablosundaki kalemlerden veri getirme     
-    tutar=0
-    for row in tables[3].find_all('tr'):
-        cells = row.find_all('td')
-        if len(cells) > 1:
-            key = cells[0].get_text(strip=True)
-            value = cells[1].get_text(strip=True).replace(",", "")
-            try:
-                value = float(value)  # Sayısal bir değer olup olmadığını kontrol et
-                if key in bordro_kalem :
-                    tutar += value
-            except ValueError:
-                continue
-    return tutar
-
-def veri_getir_kesintitablosu(bordro_kalem): #Kesintiler tablosundaki kalemlerden veri getirme     
-    tutar=0
-    for row in tables[4].find_all('tr'):
-        cells = row.find_all('td')
-        if len(cells) > 1:
-            key = cells[0].get_text(strip=True)
-            value = cells[1].get_text(strip=True).replace(",", "")
-            try:
-                value = float(value)  # Sayısal bir değer olup olmadığını kontrol et
-                if key in bordro_kalem:
-                    tutar += value
-            except ValueError:
-                continue
-    return tutar
-
-
-
-
-
-yemek_is_gunu = None
-for row in tables[3].find_all('tr'): # "Yemek Ücreti" satırından iş günü sayısını alma
-    cells = row.find_all('td')
-    if len(cells) > 1:
-        key = cells[0].get_text(strip=True)
-        if "Yemek Ücreti" or "Yemek Çeki/ Kartı" in key:
-            # Parantez içindeki sayıyı ayıkla
-            match = re.search(r'\((\d+)\s*iş günü\)', key)
-            if match:
-                yemek_is_gunu = int(match.group(1))
-                break
-
-def html_yemek_secimi(i): # yemek seçim
-    yemek_index=[0] * 12 
-    for row in tables[3].find_all('tr'): 
-        cells = row.find_all('td')
-        if len(cells) > 1:
-            key = cells[0].get_text(strip=True)
-            if "Yemek Ücreti" in key:
-                yemek_index[i] = 0
-            if "Yemek Çeki/ Kartı" in key:
-                yemek_index[i] = 1 
-    return yemek_index[i]
-
-
-
-
-
-
-#Yemek Çeki/ Kartı (15 iş günü)
-
-html_kıra_yardımı=veri_getir_ucrettablosu("Kira Yardımı")
-
-if html_kıra_yardımı > 30000: # Zam döneminde min kira'ya göre güncellenmesi gerekir  
-    html_kıra_yardımı_net = html_brutten_nete(html_kıra_yardımı)
-else:
-    html_kıra_yardımı_brut= html_kıra_yardımı
-
-html_ek_gorev_net=html_brutten_nete(veri_getir_ucrettablosu("İştirak Görev Ücreti"))
-
-html_net_gelir = html_ek_gorev_net + html_kıra_yardımı_net 
+ yemek_is_gunu = None
+ for row in tables[3].find_all('tr'): # "Yemek Ücreti" satırından iş günü sayısını alma
+     cells = row.find_all('td')
+     if len(cells) > 1:
+         key = cells[0].get_text(strip=True)
+         if "Yemek Ücreti" or "Yemek Çeki/ Kartı" in key:
+             # Parantez içindeki sayıyı ayıkla
+             match = re.search(r'\((\d+)\s*iş günü\)', key)
+             if match:
+                 yemek_is_gunu = int(match.group(1))
+                 break
+ 
+ def html_yemek_secimi(i): # yemek seçim
+     yemek_index=[0] * 12 
+     for row in tables[3].find_all('tr'): 
+         cells = row.find_all('td')
+         if len(cells) > 1:
+             key = cells[0].get_text(strip=True)
+             if "Yemek Ücreti" in key:
+                 yemek_index[i] = 0
+             if "Yemek Çeki/ Kartı" in key:
+                 yemek_index[i] = 1 
+     return yemek_index[i]
+ 
+ 
+ 
+ 
+ 
+ 
+ #Yemek Çeki/ Kartı (15 iş günü)
+ 
+ html_kıra_yardımı=veri_getir_ucrettablosu("Kira Yardımı")
+ 
+ if html_kıra_yardımı > 30000: # Zam döneminde min kira'ya göre güncellenmesi gerekir  
+     html_kıra_yardımı_net = html_brutten_nete(html_kıra_yardımı)
+ else:
+     html_kıra_yardımı_brut= html_kıra_yardımı
+ 
+ html_ek_gorev_net=html_brutten_nete(veri_getir_ucrettablosu("İştirak Görev Ücreti"))
+ 
+ html_net_gelir = html_ek_gorev_net + html_kıra_yardımı_net 
 
 
 def page():
