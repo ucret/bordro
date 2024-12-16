@@ -456,8 +456,7 @@ def veri_getir_kesintitablosu(bordro_kalem): #Kesintiler tablosundaki kalemlerde
 
 
 
-yuklenen_bordro_ay=int(table_bordro[1].loc[4,1][5]) # Kullanıcının yüklediği bordronun ay bilgisi
-
+yuklenen_bordro_ay=int(table_bordro[1].loc[4,1].split('-')[1].split('/')[0]) # Kullanıcının yüklediği bordronun ay bilgisi
 
 yemek_is_gunu = None
 for row in tables[3].find_all('tr'): # "Yemek Ücreti" satırından iş günü sayısını alma
