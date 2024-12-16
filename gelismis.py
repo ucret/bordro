@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import math as mt
 import random
+pip install BeautifulSoup
 from bs4 import BeautifulSoup
 import re
 
