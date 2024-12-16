@@ -940,8 +940,11 @@ def page():
 def sonuc():
  st.write("Osman2")
 
-pg = st.navigation([
-    st.Page(esas, title="First page", icon="🔥"),
-    st.Page(page, title="Second page", icon=":material/favorite:"),
-])
-pg.run()
+
+if st.button("Home"):
+    st.switch_page(esas)
+if st.button("Page 1"):
+    st.switch_page(page)
+
+
+
