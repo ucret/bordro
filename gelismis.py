@@ -301,8 +301,8 @@ def yemekhane(i,gv_matrah,es_matrah,net, yemek_gun,cek_nakit=0): # 0= nakit , 1=
         return brut
     else:
         istisna =yemek_GV_istisna[i] * yemek_gun
-        net_toplam = net*yemek_gun
-        vergili_kisim = net_toplam - istisna
+        #net_toplam = net*yemek_gun
+        vergili_kisim = net - istisna
         brut = brut_vergi(gv_matrah, vergili_kisim) + istisna
         return brut
 
@@ -533,7 +533,7 @@ for i, ay in enumerate(aylar):
                     yemek_secim[i]=st.radio("",options=["Nakit","Yemek Çeki"],index=html_yemek_secimi(i) if i == 0 else ["Nakit", "Yemek Çeki"].index(yemek_secim[i - 1]),key=f"yemek_secim_{i}",horizontal=True,disabled=True)
                 else:
                     yemek_secim[i]=yemek_secim[i-1]
-                    
+
                 ek_gorev[i] = st.number_input(f":money_with_wings: İlave Ödemeleriniz (Net TL)", step=1000, value=html_net_gelir_a, key=f"ek_gorev_{i}"
                     ,help="Hesaplama bordro verileriniz ile devam etmektedir",disabled=True)
             
