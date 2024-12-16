@@ -10,11 +10,7 @@ import re
 
 
 
-pg = st.navigation([
-    st.Page(sonuc, title="First page", icon="🔥"),
-    st.Page(page, title="Second page", icon=":material/favorite:"),
-])
-pg.run()
+
 
 Aylık = [0]*12 #Aylık Ücret
 onceki_aylik=[0]*13
@@ -943,3 +939,9 @@ def sonuc():
     
         # Streamlit üzerinden Donut Chart gösterimi
         st.altair_chart(donut_chart, use_container_width=True)
+
+pg = st.navigation([
+    st.Page(sonuc, title="First page", icon="🔥"),
+    st.Page(page, title="Second page", icon=":material/favorite:"),
+])
+pg.run()
