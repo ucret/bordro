@@ -414,7 +414,7 @@ def page2():
      else:
          st.write("Hiç tablo bulunamadı.")
 
-
+ yuklenen_bordro_ay=int(table_bordro[1].loc[4,1].split('-')[1].split('/')[0]) # Kullanıcının yüklediği bordronun ay bilgisi
 def veri_getir(bordro_kalem): #Tüm tablolarda veri getirir     
     tutar=0
     for table in soup.find_all('table'):
@@ -463,7 +463,7 @@ def veri_getir_kesintitablosu(bordro_kalem): #Kesintiler tablosundaki kalemlerde
 
 
 
-yuklenen_bordro_ay=int(table_bordro[1].loc[4,1].split('-')[1].split('/')[0]) # Kullanıcının yüklediği bordronun ay bilgisi
+
 
 yemek_is_gunu = None
 for row in tables[3].find_all('tr'): # "Yemek Ücreti" satırından iş günü sayısını alma
