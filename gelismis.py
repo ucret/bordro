@@ -11,8 +11,10 @@ import re
 if st.button("Home"):
     st.switch_page("gelismis.py")
 if st.button("Page 1"):
-    st.switch_page("bordro.py")
+    st.switch_page("page2")
 
+def page2:
+    st.write("sayfa2")
 
 Aylık = [0]*12 #Aylık Ücret
 onceki_aylik=[0]*13
