@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 import math as mt
 import random
-pip install -r requirements.txt
 from bs4 import BeautifulSoup
 import re
 
