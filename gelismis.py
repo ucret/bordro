@@ -369,50 +369,50 @@ with st.sidebar:
     if st.button("📣 Uygulama Hakkında"):
         st.session_state.info_shown_sidebar = not st.session_state.info_shown_sidebar
         
-
-if st.session_state.info_shown_sidebar:
-    st.info("Net Gelir Hesaplama uygulaması ile yan panelden giriş yapacağınız ücretlerinizin yıl içerisindeki brüt/net ücret dağılımınızı aşağıdaki tablolarımız ile görebilirsiniz",icon="💁")
-    st.info("Uygulamamız ile bordronuzdaki tutarların yaklaşık olmasını beklemekteyiz. Çocuk zammı, kasa tazminatı gibi bazı bireysel ödemeler ve bireysel sigorta kesintileri gibi kesintiler henüz uygulamamıza dahil değildir",icon="⚖️")
-    st.info("Bilgilendirmeyi tamamladıysak '📣 Uygulama Hakkında' butonuna tıklayarak bilgi kutularını kapatabilirsiniz ",icon="✅")
-
-st.sidebar.header("Ücret Girdi Alanları")
-
-# HTML dosyasını kullanıcıdan yükleme
-uploaded_file = st.file_uploader("Lütfen bir HTML bordro dosyası yükleyin:", type=["html"])
-
-if uploaded_file is not None:
-    # HTML içeriğini okuma ve ayrıştırma
-    try:
-        html_content = uploaded_file.read().decode("ISO-8859-9")
-    except UnicodeDecodeError:
-        st.error("Dosya kodlaması okunamadı. Lütfen doğru dosyayı yüklediğinizden emin olun.")
-
-if html_content: #Yüklenen bordronun ayrı tablo ve dataframe'lere ayrılması
-    # BeautifulSoup ile HTML'i ayrıştırma
-    soup = BeautifulSoup(html_content, 'html.parser')
-    
-    # Tabloları bulma
-    tables = soup.find_all('table')
-    st.write(f"Toplam {len(tables)} tablo bulundu.")
-
-    # Tabloları ayrı ayrı ayrıştırma ve gösterme
-    if len(tables) > 0:
-        for i, table in enumerate(tables):
-            table_data = []
-            rows = table.find_all('tr')
-            for row in rows:
-                columns = row.find_all('td')
-                if columns:  # Sütunları varsa ekle
-                    row_data = [col.get_text(strip=True) for col in columns]
-                    table_data.append(row_data)
-
-            # DataFrame oluşturma
-            df = pd.DataFrame(table_data)
-            st.write(f"Tablo {i + 1}")
-            st.dataframe(df)
-            table_bordro.append(df)
-    else:
-        st.write("Hiç tablo bulunamadı.")
+def page2():
+ if st.session_state.info_shown_sidebar:
+     st.info("Net Gelir Hesaplama uygulaması ile yan panelden giriş yapacağınız ücretlerinizin yıl içerisindeki brüt/net ücret dağılımınızı aşağıdaki tablolarımız ile görebilirsiniz",icon="💁")
+     st.info("Uygulamamız ile bordronuzdaki tutarların yaklaşık olmasını beklemekteyiz. Çocuk zammı, kasa tazminatı gibi bazı bireysel ödemeler ve bireysel sigorta kesintileri gibi kesintiler henüz uygulamamıza dahil değildir",icon="⚖️")
+     st.info("Bilgilendirmeyi tamamladıysak '📣 Uygulama Hakkında' butonuna tıklayarak bilgi kutularını kapatabilirsiniz ",icon="✅")
+ 
+ st.sidebar.header("Ücret Girdi Alanları")
+ 
+ # HTML dosyasını kullanıcıdan yükleme
+ uploaded_file = st.file_uploader("Lütfen bir HTML bordro dosyası yükleyin:", type=["html"])
+ 
+ if uploaded_file is not None:
+     # HTML içeriğini okuma ve ayrıştırma
+     try:
+         html_content = uploaded_file.read().decode("ISO-8859-9")
+     except UnicodeDecodeError:
+         st.error("Dosya kodlaması okunamadı. Lütfen doğru dosyayı yüklediğinizden emin olun.")
+ 
+ if html_content: #Yüklenen bordronun ayrı tablo ve dataframe'lere ayrılması
+     # BeautifulSoup ile HTML'i ayrıştırma
+     soup = BeautifulSoup(html_content, 'html.parser')
+     
+     # Tabloları bulma
+     tables = soup.find_all('table')
+     st.write(f"Toplam {len(tables)} tablo bulundu.")
+ 
+     # Tabloları ayrı ayrı ayrıştırma ve gösterme
+     if len(tables) > 0:
+         for i, table in enumerate(tables):
+             table_data = []
+             rows = table.find_all('tr')
+             for row in rows:
+                 columns = row.find_all('td')
+                 if columns:  # Sütunları varsa ekle
+                     row_data = [col.get_text(strip=True) for col in columns]
+                     table_data.append(row_data)
+ 
+             # DataFrame oluşturma
+             df = pd.DataFrame(table_data)
+             st.write(f"Tablo {i + 1}")
+             st.dataframe(df)
+             table_bordro.append(df)
+     else:
+         st.write("Hiç tablo bulunamadı.")
 
 
 def veri_getir(bordro_kalem): #Tüm tablolarda veri getirir     
