@@ -6,6 +6,15 @@ import random
 from bs4 import BeautifulSoup
 import re
 
+def page2():
+    st.title("Second page")
+
+pg = st.navigation([
+    st.Page("page1.py", title="First page", icon="🔥"),
+    st.Page(page2, title="Second page", icon=":material/favorite:"),
+])
+pg.run()
+
 Aylık = [0]*12 #Aylık Ücret
 onceki_aylik=[0]*13
 onceki_aylik[0] = 33000
