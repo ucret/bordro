@@ -6,14 +6,13 @@ import random
 from bs4 import BeautifulSoup
 import re
 
-def page2():
-    st.title("Second page")
 
-pg = st.navigation([
-    st.Page("gelismis.py", title="First page", icon="🔥"),
-    st.Page(page2, title="Second page", icon=":material/favorite:"),
-])
-pg.run()
+
+if st.button("Home"):
+    st.switch_page("gelismis.py")
+if st.button("Page 1"):
+    st.switch_page("bordro.py")
+
 
 Aylık = [0]*12 #Aylık Ücret
 onceki_aylik=[0]*13
