@@ -8,13 +8,13 @@ import re
 
 
 
-if st.button("Home"):
-    st.switch_page("gelismis.py")
-if st.button("Page 1"):
-    st.switch_page("page2")
 
-def page2():
-    st.write("sayfa2")
+
+pg = st.navigation([
+    st.Page("sonuc", title="First page", icon="🔥"),
+    st.Page(page, title="Second page", icon=":material/favorite:"),
+])
+pg.run()
 
 Aylık = [0]*12 #Aylık Ücret
 onceki_aylik=[0]*13
@@ -512,94 +512,94 @@ html_ek_gorev_net=html_brutten_nete(veri_getir_ucrettablosu("İştirak Görev Ü
 html_net_gelir = html_ek_gorev_net + html_kıra_yardımı_net 
 
 
-
-with st.sidebar.expander("🗓️ 2024 Aralık"):
-    onceki_aylik[0] = st.number_input(":money_with_wings: Maaş Tutarınız (Brüt TL):", step=1000,value=0
-        ,help=" Bu alan 2024 yılı Aralık maaşınız ve 2025 Ocak maaşınızın arasındaki yükselme farkı hesaplaması için oluşturulmuştur.") # i=0: Aralık Ayı indeksi
-
-for i, ay in enumerate(aylar):
-    with st.sidebar.expander(f"🗓️ 2025 {ay}"):
-        # Sabit Ödemeleriniz kısmı
-        with st.container():
-            st.markdown("### **Sabit Ödemeleriniz**")
-            if i < yuklenen_bordro_ay: # Kullanıcı HTML yüklendiyse, yüklediği aydan öncekileri dondur
-                html_maas = int(float(veri_getir_ucrettablosu("Maaş"))) if i >= yuklenen_bordro_ay-1 else (Aylık[i - 1] if i > 0 else 0)
-                html_tazm_top_a = int(float(veri_getir_ucrettablosu(tazminat_kalemleri))) + int(html_kıra_yardımı_brut) if i >= yuklenen_bordro_ay-1 else (Tazm_Top[i - 1] if i > 0 else 0)
-                html_yemek_gun_say=int(float(yemek_is_gunu)) if i >= yuklenen_bordro_ay-1 else (yemek_gun_say[i - 1] if i > 0 else 0)  
-                html_net_gelir_a = int(html_net_gelir) if i >= yuklenen_bordro_ay-1 else (ek_gorev[i - 1] if i > 0 else 0)     
-
-                Aylık[i] = st.number_input(f":money_with_wings: Maaş Tutarınız (Brüt TL)",step=1000,value=html_maas, key=f"Aylik_{i}",
-                help="Hesaplama bordro verileriniz ile devam etmektedir",disabled=True)
-                
-                ikramiye[i] = mt.ceil(Aylık[i] / 3)
-                st.write(f":money_with_wings: İkramiye Tutarınız: {format(ikramiye[i], ',').replace(',', '.')} TL")
-                
-                Tazm_Top[i] = st.number_input(f":money_with_wings: Tazminat Toplamlarınız (Brüt TL)", step=1000, value=html_tazm_top_a, key=f"Tazm_Top_{i}",
+def page():
+    with st.sidebar.expander("🗓️ 2024 Aralık"):
+        onceki_aylik[0] = st.number_input(":money_with_wings: Maaş Tutarınız (Brüt TL):", step=1000,value=0
+            ,help=" Bu alan 2024 yılı Aralık maaşınız ve 2025 Ocak maaşınızın arasındaki yükselme farkı hesaplaması için oluşturulmuştur.") # i=0: Aralık Ayı indeksi
+    
+    for i, ay in enumerate(aylar):
+        with st.sidebar.expander(f"🗓️ 2025 {ay}"):
+            # Sabit Ödemeleriniz kısmı
+            with st.container():
+                st.markdown("### **Sabit Ödemeleriniz**")
+                if i < yuklenen_bordro_ay: # Kullanıcı HTML yüklendiyse, yüklediği aydan öncekileri dondur
+                    html_maas = int(float(veri_getir_ucrettablosu("Maaş"))) if i >= yuklenen_bordro_ay-1 else (Aylık[i - 1] if i > 0 else 0)
+                    html_tazm_top_a = int(float(veri_getir_ucrettablosu(tazminat_kalemleri))) + int(html_kıra_yardımı_brut) if i >= yuklenen_bordro_ay-1 else (Tazm_Top[i - 1] if i > 0 else 0)
+                    html_yemek_gun_say=int(float(yemek_is_gunu)) if i >= yuklenen_bordro_ay-1 else (yemek_gun_say[i - 1] if i > 0 else 0)  
+                    html_net_gelir_a = int(html_net_gelir) if i >= yuklenen_bordro_ay-1 else (ek_gorev[i - 1] if i > 0 else 0)     
+    
+                    Aylık[i] = st.number_input(f":money_with_wings: Maaş Tutarınız (Brüt TL)",step=1000,value=html_maas, key=f"Aylik_{i}",
                     help="Hesaplama bordro verileriniz ile devam etmektedir",disabled=True)
+                    
+                    ikramiye[i] = mt.ceil(Aylık[i] / 3)
+                    st.write(f":money_with_wings: İkramiye Tutarınız: {format(ikramiye[i], ',').replace(',', '.')} TL")
+                    
+                    Tazm_Top[i] = st.number_input(f":money_with_wings: Tazminat Toplamlarınız (Brüt TL)", step=1000, value=html_tazm_top_a, key=f"Tazm_Top_{i}",
+                        help="Hesaplama bordro verileriniz ile devam etmektedir",disabled=True)
+                    
+                    yemek_gun_say[i]= st.number_input(f"🍔 Yemek Gün Sayınızı Giriniz", step=1, value=html_yemek_gun_say, key=f"yemek_gun_say{i}",disabled=True)
+                    
+                    if i==0 or i==6:
+                        yemek_secim[i]=st.radio("",options=["Nakit","Yemek Çeki"],index=html_yemek_secimi(i) if i == 0 else ["Nakit", "Yemek Çeki"].index(yemek_secim[i - 1]),key=f"yemek_secim_{i}",horizontal=True,disabled=True)
+                    else:
+                        yemek_secim[i]=yemek_secim[i-1]
+    
+                    ek_gorev[i] = st.number_input(f":money_with_wings: İlave Ödemeleriniz (Net TL)", step=1000, value=html_net_gelir_a, key=f"ek_gorev_{i}"
+                        ,help="Hesaplama bordro verileriniz ile devam etmektedir",disabled=True)
                 
-                yemek_gun_say[i]= st.number_input(f"🍔 Yemek Gün Sayınızı Giriniz", step=1, value=html_yemek_gun_say, key=f"yemek_gun_say{i}",disabled=True)
+                else:    
+                    Aylık[i] = st.number_input(f":money_with_wings: Maaş Tutarınız (Brüt TL)",step=1000,value=Aylık[i] if i == 0 else Aylık[i - 1], key=f"Aylik_{i}",
+                        help="Aylık ücretinizi bu alana girebilirsiniz (Bordronuzdaki 'Maaş' alanı)")
                 
-                if i==0 or i==6:
-                    yemek_secim[i]=st.radio("",options=["Nakit","Yemek Çeki"],index=html_yemek_secimi(i) if i == 0 else ["Nakit", "Yemek Çeki"].index(yemek_secim[i - 1]),key=f"yemek_secim_{i}",horizontal=True,disabled=True)
+                    ikramiye[i] = mt.ceil(Aylık[i] / 3)
+                    st.write(f":money_with_wings: İkramiye Tutarınız: {format(ikramiye[i], ',').replace(',', '.')} TL")
+                
+                    Tazm_Top[i] = st.number_input(f":money_with_wings: Tazminat Toplamlarınız (Brüt TL)", step=1000, value=Tazm_Top[i - 1] if i > 0 else 0, key=f"Tazm_Top_{i}",
+                        help="Unvan, Yabancı Dil, Kambiyo, Mali Tahlil gibi tazminatlarınızın toplamını bu alana girebilirsiniz")
+                
+                    ek_gorev[i] = st.number_input(f":money_with_wings: İlave Ödemeleriniz (Net TL)", step=1000, value=ek_gorev[i - 1] if i > 0 else 0, key=f"ek_gorev_{i}"
+                        ,help="Sabit net gelirlerinizi bu alana girebilirsiniz")
+                
+                    yemek_gun_say[i]= st.number_input(f"🍔 Yemek Gün Sayınızı Giriniz", step=1, value=yemek_gun_say[i - 1] if i > 0 else 0, key=f"yemek_gun_say{i}")
+                    
+                    if i==0 or i==6:
+                        yemek_secim[i]=st.radio("",options=["Nakit","Yemek Çeki"],index=0 if i == 0 else ["Nakit", "Yemek Çeki"].index(yemek_secim[i - 1]),key=f"yemek_secim_{i}",horizontal=True)
+                    else:
+                        yemek_secim[i]=yemek_secim[i-1]
+                    
+                    yemek_net[i]=yemek_gun_say[i] * banka_yemek[i]
+                    
+                    asgari_ucret_uyari(Aylık[i]+ikramiye[i]+Tazm_Top[i]+ek_gorev[i])
+    
+                
+                    
+                send_aidat[i]=Aylık[i] * 0.015
+                            
+            # Değişken Ödemeleriniz kısmı
+            st.markdown("### **Değişken Ödemeleriniz**")
+            if i < yuklenen_bordro_ay: # Kullanıcı HTML yüklendiyse, yüklediği aydan öncekileri dondur
+                if i==3:
+                    ilave[i] = st.number_input(f":money_with_wings: İlave Ödemeleriniz (Brüt TL)", step=1000, value=0, key=f"ilave_{i}"
+                        ,help="Hesaplama bordro verileriniz ile devam etmektedir",disabled=True)
+                    jest[i] = st.number_input(f"Jestiyon Tutarınız (Net TL)", step=1000, value=0, key=f"jest_{i}"
+                        ,help="Hesaplama bordro verileriniz ile devam etmektedir",disabled=True)
                 else:
-                    yemek_secim[i]=yemek_secim[i-1]
-
-                ek_gorev[i] = st.number_input(f":money_with_wings: İlave Ödemeleriniz (Net TL)", step=1000, value=html_net_gelir_a, key=f"ek_gorev_{i}"
-                    ,help="Hesaplama bordro verileriniz ile devam etmektedir",disabled=True)
-            
-            else:    
-                Aylık[i] = st.number_input(f":money_with_wings: Maaş Tutarınız (Brüt TL)",step=1000,value=Aylık[i] if i == 0 else Aylık[i - 1], key=f"Aylik_{i}",
-                    help="Aylık ücretinizi bu alana girebilirsiniz (Bordronuzdaki 'Maaş' alanı)")
-            
-                ikramiye[i] = mt.ceil(Aylık[i] / 3)
-                st.write(f":money_with_wings: İkramiye Tutarınız: {format(ikramiye[i], ',').replace(',', '.')} TL")
-            
-                Tazm_Top[i] = st.number_input(f":money_with_wings: Tazminat Toplamlarınız (Brüt TL)", step=1000, value=Tazm_Top[i - 1] if i > 0 else 0, key=f"Tazm_Top_{i}",
-                    help="Unvan, Yabancı Dil, Kambiyo, Mali Tahlil gibi tazminatlarınızın toplamını bu alana girebilirsiniz")
-            
-                ek_gorev[i] = st.number_input(f":money_with_wings: İlave Ödemeleriniz (Net TL)", step=1000, value=ek_gorev[i - 1] if i > 0 else 0, key=f"ek_gorev_{i}"
-                    ,help="Sabit net gelirlerinizi bu alana girebilirsiniz")
-            
-                yemek_gun_say[i]= st.number_input(f"🍔 Yemek Gün Sayınızı Giriniz", step=1, value=yemek_gun_say[i - 1] if i > 0 else 0, key=f"yemek_gun_say{i}")
-                
-                if i==0 or i==6:
-                    yemek_secim[i]=st.radio("",options=["Nakit","Yemek Çeki"],index=0 if i == 0 else ["Nakit", "Yemek Çeki"].index(yemek_secim[i - 1]),key=f"yemek_secim_{i}",horizontal=True)
+                    ilave[i] = st.number_input(f":money_with_wings: İlave Ödemeleriniz (Brüt TL)", step=1000, value=0, key=f"ilave_{i}"
+                        ,help="Hesaplama bordro verileriniz ile devam etmektedir",disabled=True)
+            else:
+                if i==3:
+                    ilave[i] = st.number_input(f":money_with_wings: İlave Ödemeleriniz (Brüt TL)", step=1000, value=0, key=f"ilave_{i}"
+                        ,help="Ay içerisinde almış olduğunuz ilave brüt ödeneklerinizin (Satış Primi, Pys Primi, Temettü) toplamını bu alana girebilirsiniz.")
+                    jest[i] = st.number_input(f"Jestiyon Tutarınız (Net TL)", step=1000, value=0, key=f"jest_{i}"
+                        ,help="Jestiyon tutarınızı NET TL olarak bu alana girebilirsiniz")
+                    
                 else:
-                    yemek_secim[i]=yemek_secim[i-1]
-                
-                yemek_net[i]=yemek_gun_say[i] * banka_yemek[i]
-                
-                asgari_ucret_uyari(Aylık[i]+ikramiye[i]+Tazm_Top[i]+ek_gorev[i])
-
-            
-                
-            send_aidat[i]=Aylık[i] * 0.015
-                        
-        # Değişken Ödemeleriniz kısmı
-        st.markdown("### **Değişken Ödemeleriniz**")
-        if i < yuklenen_bordro_ay: # Kullanıcı HTML yüklendiyse, yüklediği aydan öncekileri dondur
-            if i==3:
-                ilave[i] = st.number_input(f":money_with_wings: İlave Ödemeleriniz (Brüt TL)", step=1000, value=0, key=f"ilave_{i}"
-                    ,help="Hesaplama bordro verileriniz ile devam etmektedir",disabled=True)
-                jest[i] = st.number_input(f"Jestiyon Tutarınız (Net TL)", step=1000, value=0, key=f"jest_{i}"
-                    ,help="Hesaplama bordro verileriniz ile devam etmektedir",disabled=True)
-            else:
-                ilave[i] = st.number_input(f":money_with_wings: İlave Ödemeleriniz (Brüt TL)", step=1000, value=0, key=f"ilave_{i}"
-                    ,help="Hesaplama bordro verileriniz ile devam etmektedir",disabled=True)
-        else:
-            if i==3:
-                ilave[i] = st.number_input(f":money_with_wings: İlave Ödemeleriniz (Brüt TL)", step=1000, value=0, key=f"ilave_{i}"
-                    ,help="Ay içerisinde almış olduğunuz ilave brüt ödeneklerinizin (Satış Primi, Pys Primi, Temettü) toplamını bu alana girebilirsiniz.")
-                jest[i] = st.number_input(f"Jestiyon Tutarınız (Net TL)", step=1000, value=0, key=f"jest_{i}"
-                    ,help="Jestiyon tutarınızı NET TL olarak bu alana girebilirsiniz")
-                
-            else:
-                ilave[i] = st.number_input(f":money_with_wings: İlave Ödemeleriniz (Brüt TL)", step=1000, value=0, key=f"ilave_{i}"
-                    ,help="Ay içerisinde almış olduğunuz ilave brüt ödeneklerinizin (Satış Primi, Pys Primi, Temettü) toplamını bu alana girebilirsiniz.")
-
-
-yemek_brut=[0]*12
-st.write(yemek_secim)
+                    ilave[i] = st.number_input(f":money_with_wings: İlave Ödemeleriniz (Brüt TL)", step=1000, value=0, key=f"ilave_{i}"
+                        ,help="Ay içerisinde almış olduğunuz ilave brüt ödeneklerinizin (Satış Primi, Pys Primi, Temettü) toplamını bu alana girebilirsiniz.")
+    
+    
+    yemek_brut=[0]*12
+    st.write(yemek_secim)
 
 for i in range(12): # i = ilgili ay, 12 ay için döngü
     sandik_isleri(i,onceki_aylik[0] if i==0 else Aylık[i-1] ,Aylık[i])
@@ -754,192 +754,192 @@ dic_vrb={"MS Banka Brüt tutar": ms_B_brüt, "MS Banka Net tutar": ms_B,
 dic_13={"Küm GV": kvm,"Devreden1":devreden1,"Devreden2":devreden2, "çalışan_devreden_1": devreden1c, "çalışan_devreden_2": devreden2c,"Banka_dev_1": devreden1b, "banka dev 2": devreden2b,
        "artan_matra" : matrah_artigi_1, "artan_matrah": matrah_artigi_2}
 
-
+def sonuc():
 #sonuç tablosu
 
-tablo = pd.DataFrame(dic, index=["Ocak","Şubat", "Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos",
-
-                                 "Eylül","Ekim","Kasım","Aralık"])
-
-columns = pd.MultiIndex.from_tuples([   # Sözlük ve gösterim sıralaması önemli
-    ("💸 💸 💸 💸 💸 💸 💸 💸 💸 💸", "Ücretler Toplamı"),
-    ("💸 💸 💸 💸 💸 💸 💸 💸 💸 💸", "Yaklaşık Net Tutar"),
-
-    ("📈 Matrah", "Emekli Sandığı"),
-    ("🏛️ Yasal Kesintiler", "Emekli Sandığı Üye Payı"),
-    ("🏛️ Yasal Kesintiler", "İşsizlik Sig. Üye Payı"),
+    tablo = pd.DataFrame(dic, index=["Ocak","Şubat", "Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos",
     
-    ("📈 Matrah", "Gelir Vergisi"),
-    ("🏛️ Yasal Kesintiler", "Gelir Vergisi"),
-    ("🏛️ Yasal Kesintiler", "Damga Vergisi"),
+                                     "Eylül","Ekim","Kasım","Aralık"])
     
-    ("ℹ️ Prim Ödemeleri Sonrası Oluşan", "Emekli Sandığı Devir Matrahı"),
-    ("ℹ️ Prim Ödemeleri Sonrası Oluşan", "Emk. Snd. Devir Mat. Kullanılan"),
-
-    ("🪙 Munzam Sandık Kesinti", "Üye Payı"),
-    ("🪙 Munzam Sandık Kesinti", "Üye Yükselme Payı"),
+    columns = pd.MultiIndex.from_tuples([   # Sözlük ve gösterim sıralaması önemli
+        ("💸 💸 💸 💸 💸 💸 💸 💸 💸 💸", "Ücretler Toplamı"),
+        ("💸 💸 💸 💸 💸 💸 💸 💸 💸 💸", "Yaklaşık Net Tutar"),
     
-    ("Yasal Asgari Ücret İadeleri", "Damga Vergisi İstisnası"),
-    ("Yasal Asgari Ücret İadeleri", "Vergi İstisnası"),
-
+        ("📈 Matrah", "Emekli Sandığı"),
+        ("🏛️ Yasal Kesintiler", "Emekli Sandığı Üye Payı"),
+        ("🏛️ Yasal Kesintiler", "İşsizlik Sig. Üye Payı"),
+        
+        ("📈 Matrah", "Gelir Vergisi"),
+        ("🏛️ Yasal Kesintiler", "Gelir Vergisi"),
+        ("🏛️ Yasal Kesintiler", "Damga Vergisi"),
+        
+        ("ℹ️ Prim Ödemeleri Sonrası Oluşan", "Emekli Sandığı Devir Matrahı"),
+        ("ℹ️ Prim Ödemeleri Sonrası Oluşan", "Emk. Snd. Devir Mat. Kullanılan"),
     
-    ("🍕🌮🍜", "Yemek Ücreti (Brüt TL)"),
-    ("🍕🌮🍜", "Yemek Ücreti (Net TL)"),
-])
-
-tablo.columns = columns
- 
-
-tablo_ms = pd.DataFrame(dic_vrb, index=["Ocak","Şubat", "Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos",
-
-                                 "Eylül","Ekim","Kasım","Aralık"])
-
- 
-
-tablo_mt = pd.DataFrame(dic_13, index=[0,1,2,3,4,5,6,7,8,9,10,11,12,13])
- 
-
-ortalamat = tablo.mean() #ortalama ödenen satırı
-
-toplamat = tablo.sum() #toplam ödenen satırı
-
-tablo.loc["Toplam"] = toplamat
-
-tablo.loc["Ortalama"]= ortalamat
-
- 
-
-ortalamat_ms = tablo_ms.mean() #ortalama ödenen satırı
-
-toplamat_ms = tablo_ms.sum() #toplam ödenen satırı
-
-tablo_ms.loc["Toplam"] = toplamat_ms
-
-tablo_ms.loc["Ortalama"]= ortalamat_ms
-
-tablo = tablo.applymap("{0:,.2f}₺".format) # format
-
-tablo_ms = tablo_ms.applymap("{0:,.2f}₺".format) # format
-
-tablo_mt = tablo_mt.applymap("{0:,.2f}₺".format) # format
-
-# ---- Ay Tabloları Gösterim ----------------------------------------------------
-
-# Renk teması ayarları
-background_colors = ["#fce4ec", "#e3f2fd", "#f8bbd0"]  # Pembe-mavi tonları
-text_color = "black"
-
-# Açılır kapanır grup kutusu
-with st.expander("Aylık Ücretler Detayları", expanded=False):
-    cols = st.columns(4)  # Her satırda 4 sütun
-    for i, ay in enumerate(aylar):
-        col = cols[i % 4]  # 4 sütun içinde sırasıyla yerleşim
-        with col:
-            # Her ay için kutucuk
-            st.markdown(
-                f"""
-                <div style="
-                    border: 1px solid #d1c4e9;
-                    border-radius: 8px;
-                    padding: 16px;
-                    background-color: {background_colors[i % len(background_colors)]};
-                    text-align: left;
-                    margin: 8px;
-                ">
-                    <h3 style="text-align: left; color: {text_color}; font-size: 21px;">{ay}</h3>
-                    <p><strong>Brüt Ücretler Toplamınız</strong></p>
-                    <p>{format(round(Toplam[i]), ',').replace(',', '.')} TL</p>
-                    <p><strong>Yaklaşık Net Ücretiniz</strong></p>
-                    <p>{format(round(net[i]), ',').replace(',', '.')} TL</p>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
-        # Yeni satıra geçmek için sütunları sıfırla
-        if (i + 1) % 4 == 0:
-            cols = st.columns(4)  # Yeni satır için sütunlar
-#------------------------------------------------------------------------------------------
-
-
-#streamlit tablo gösterimi
-with st.expander("Yıllık Ücretleriniz Tablo Gösterimi"):
-        st.dataframe(tablo.style.set_table_styles(
-    ))
-
-
-
-st.table(tablo_ms)
-st.table(tablo_mt)
-
-def tutar_format(value):
+        ("🪙 Munzam Sandık Kesinti", "Üye Payı"),
+        ("🪙 Munzam Sandık Kesinti", "Üye Yükselme Payı"),
+        
+        ("Yasal Asgari Ücret İadeleri", "Damga Vergisi İstisnası"),
+        ("Yasal Asgari Ücret İadeleri", "Vergi İstisnası"),
     
-    formatted_value = f"{value:,.2f}"  # Binlik ayraçlar ve iki ondalık basamak
-    formatted_value = formatted_value.replace(",", "X").replace(".", ",").replace("X", ".")
-    return formatted_value
-
-#---- PİE Charts ---- 
-
-import altair as alt
-
-with st.expander("Yıllık Ücret Dağılımı", expanded=False):
-    # Donut chart verisi
-    donut_data = pd.DataFrame({
-        "Kategori": ["Net Ücret", "Kesintiler"],
-        "Tutar": [sum(net), kesinti_toplam]
-    })
-
-    # Tutarları formatlayalım
-    a = tutar_format(sum(net))
-    b = tutar_format(kesinti_toplam)
-
-    # "Kategori" ile "Tutar" bilgisini birleştirme (grafikten önce yapılır)
-    donut_data["Kategori"] = donut_data["Kategori"] + ": " + donut_data["Tutar"].apply(lambda x: f"{tutar_format(x)} TL")
-
-    # Özel renk skalası
-    color_scale = alt.Scale(
-        domain=donut_data["Kategori"].tolist(),  # Güncellenmiş Kategori sütununu kullan
-        range=["#FF69B4", "#40E0D0"]  # Pembe ve Turkuaz
-    )
-
-    # Donut Chart oluşturma
-    base_chart = alt.Chart(donut_data).mark_arc(innerRadius=100, outerRadius=150).encode(
-        theta=alt.Theta("Tutar:Q", stack=True),  # Dilim büyüklükleri
-        color=alt.Color("Kategori:N", scale=color_scale, legend=alt.Legend(title="Kategori")),  # Renkler
-        tooltip=[
-            alt.Tooltip("Kategori:N")  # Tooltip'te sadece Kategori sütunu gösterilir
-        ]
-    ).properties(
-        width=500,
-        height=500
-    )
-
-    # Ortadaki yazılar için iki ayrı katman
-    center_text_label = alt.Chart(pd.DataFrame({
-        "label": ["Ücretler Toplamı (Brüt TL)"]
-    })).mark_text(
-        fontSize=16,
-        align='center',
-        baseline='bottom',
-        dy=-10  # Yüksekliği yukarı taşı
-    ).encode(
-        text='label:N'
-    )
-
-    formatlanmıs_brut = tutar_format(round(sum(Toplam), 2))
-
-    center_text_value = alt.Chart(pd.DataFrame({
-        "value": [f"{formatlanmıs_brut} TL"]
-    })).mark_text(
-        fontSize=16,
-        align='center',
-        baseline='top',
-        dy=10  # Yüksekliği aşağı taşı
-    ).encode(
-        text='value:N'
-    )
-
-    # Grafik katmanlama
-    donut_chart = base_chart + center_text_label + center_text_value
-
-    # Streamlit üzerinden Donut Chart gösterimi
-    st.altair_chart(donut_chart, use_container_width=True)
+        
+        ("🍕🌮🍜", "Yemek Ücreti (Brüt TL)"),
+        ("🍕🌮🍜", "Yemek Ücreti (Net TL)"),
+    ])
+    
+    tablo.columns = columns
+     
+    
+    tablo_ms = pd.DataFrame(dic_vrb, index=["Ocak","Şubat", "Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos",
+    
+                                     "Eylül","Ekim","Kasım","Aralık"])
+    
+     
+    
+    tablo_mt = pd.DataFrame(dic_13, index=[0,1,2,3,4,5,6,7,8,9,10,11,12,13])
+     
+    
+    ortalamat = tablo.mean() #ortalama ödenen satırı
+    
+    toplamat = tablo.sum() #toplam ödenen satırı
+    
+    tablo.loc["Toplam"] = toplamat
+    
+    tablo.loc["Ortalama"]= ortalamat
+    
+     
+    
+    ortalamat_ms = tablo_ms.mean() #ortalama ödenen satırı
+    
+    toplamat_ms = tablo_ms.sum() #toplam ödenen satırı
+    
+    tablo_ms.loc["Toplam"] = toplamat_ms
+    
+    tablo_ms.loc["Ortalama"]= ortalamat_ms
+    
+    tablo = tablo.applymap("{0:,.2f}₺".format) # format
+    
+    tablo_ms = tablo_ms.applymap("{0:,.2f}₺".format) # format
+    
+    tablo_mt = tablo_mt.applymap("{0:,.2f}₺".format) # format
+    
+    # ---- Ay Tabloları Gösterim ----------------------------------------------------
+    
+    # Renk teması ayarları
+    background_colors = ["#fce4ec", "#e3f2fd", "#f8bbd0"]  # Pembe-mavi tonları
+    text_color = "black"
+    
+    # Açılır kapanır grup kutusu
+    with st.expander("Aylık Ücretler Detayları", expanded=False):
+        cols = st.columns(4)  # Her satırda 4 sütun
+        for i, ay in enumerate(aylar):
+            col = cols[i % 4]  # 4 sütun içinde sırasıyla yerleşim
+            with col:
+                # Her ay için kutucuk
+                st.markdown(
+                    f"""
+                    <div style="
+                        border: 1px solid #d1c4e9;
+                        border-radius: 8px;
+                        padding: 16px;
+                        background-color: {background_colors[i % len(background_colors)]};
+                        text-align: left;
+                        margin: 8px;
+                    ">
+                        <h3 style="text-align: left; color: {text_color}; font-size: 21px;">{ay}</h3>
+                        <p><strong>Brüt Ücretler Toplamınız</strong></p>
+                        <p>{format(round(Toplam[i]), ',').replace(',', '.')} TL</p>
+                        <p><strong>Yaklaşık Net Ücretiniz</strong></p>
+                        <p>{format(round(net[i]), ',').replace(',', '.')} TL</p>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+            # Yeni satıra geçmek için sütunları sıfırla
+            if (i + 1) % 4 == 0:
+                cols = st.columns(4)  # Yeni satır için sütunlar
+    #------------------------------------------------------------------------------------------
+    
+    
+    #streamlit tablo gösterimi
+    with st.expander("Yıllık Ücretleriniz Tablo Gösterimi"):
+            st.dataframe(tablo.style.set_table_styles(
+        ))
+    
+    
+    
+    st.table(tablo_ms)
+    st.table(tablo_mt)
+    
+    def tutar_format(value):
+        
+        formatted_value = f"{value:,.2f}"  # Binlik ayraçlar ve iki ondalık basamak
+        formatted_value = formatted_value.replace(",", "X").replace(".", ",").replace("X", ".")
+        return formatted_value
+    
+    #---- PİE Charts ---- 
+    
+    import altair as alt
+    
+    with st.expander("Yıllık Ücret Dağılımı", expanded=False):
+        # Donut chart verisi
+        donut_data = pd.DataFrame({
+            "Kategori": ["Net Ücret", "Kesintiler"],
+            "Tutar": [sum(net), kesinti_toplam]
+        })
+    
+        # Tutarları formatlayalım
+        a = tutar_format(sum(net))
+        b = tutar_format(kesinti_toplam)
+    
+        # "Kategori" ile "Tutar" bilgisini birleştirme (grafikten önce yapılır)
+        donut_data["Kategori"] = donut_data["Kategori"] + ": " + donut_data["Tutar"].apply(lambda x: f"{tutar_format(x)} TL")
+    
+        # Özel renk skalası
+        color_scale = alt.Scale(
+            domain=donut_data["Kategori"].tolist(),  # Güncellenmiş Kategori sütununu kullan
+            range=["#FF69B4", "#40E0D0"]  # Pembe ve Turkuaz
+        )
+    
+        # Donut Chart oluşturma
+        base_chart = alt.Chart(donut_data).mark_arc(innerRadius=100, outerRadius=150).encode(
+            theta=alt.Theta("Tutar:Q", stack=True),  # Dilim büyüklükleri
+            color=alt.Color("Kategori:N", scale=color_scale, legend=alt.Legend(title="Kategori")),  # Renkler
+            tooltip=[
+                alt.Tooltip("Kategori:N")  # Tooltip'te sadece Kategori sütunu gösterilir
+            ]
+        ).properties(
+            width=500,
+            height=500
+        )
+    
+        # Ortadaki yazılar için iki ayrı katman
+        center_text_label = alt.Chart(pd.DataFrame({
+            "label": ["Ücretler Toplamı (Brüt TL)"]
+        })).mark_text(
+            fontSize=16,
+            align='center',
+            baseline='bottom',
+            dy=-10  # Yüksekliği yukarı taşı
+        ).encode(
+            text='label:N'
+        )
+    
+        formatlanmıs_brut = tutar_format(round(sum(Toplam), 2))
+    
+        center_text_value = alt.Chart(pd.DataFrame({
+            "value": [f"{formatlanmıs_brut} TL"]
+        })).mark_text(
+            fontSize=16,
+            align='center',
+            baseline='top',
+            dy=10  # Yüksekliği aşağı taşı
+        ).encode(
+            text='value:N'
+        )
+    
+        # Grafik katmanlama
+        donut_chart = base_chart + center_text_label + center_text_value
+    
+        # Streamlit üzerinden Donut Chart gösterimi
+        st.altair_chart(donut_chart, use_container_width=True)
