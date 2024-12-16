@@ -13,7 +13,7 @@ if st.button("Home"):
 if st.button("Page 1"):
     st.switch_page("page2")
 
-def page2:
+def page2():
     st.write("sayfa2")
 
 Aylık = [0]*12 #Aylık Ücret
