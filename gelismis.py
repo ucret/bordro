@@ -11,7 +11,7 @@ import re
 
 
 pg = st.navigation([
-    st.Page("sonuc", title="First page", icon="🔥"),
+    st.Page(sonuc, title="First page", icon="🔥"),
     st.Page(page, title="Second page", icon=":material/favorite:"),
 ])
 pg.run()
