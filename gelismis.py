@@ -355,15 +355,6 @@ def netten_brute_yemek_ayni(i,gv_matrah,net, gun, indirim = None):
 aylar = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"]
 
 
-def page2():
-    st.title("Second page")
-
-pg = st.navigation([
-    st.Page("page1.py", title="First page", icon="🔥"),
-    st.Page(page2, title="Second page", icon=":material/favorite:"),
-])
-pg.run()
-
 
 if 'info_shown_sidebar' not in st.session_state:
     st.session_state.info_shown_sidebar = False
