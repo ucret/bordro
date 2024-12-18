@@ -421,7 +421,7 @@ if st.session_state.info_shown_sidebar:
             st.info("2️⃣ Eğer bordro yüklemeden tüm yıl içindeki net gelirlerini hesaplamak istiyorsan, sol tarafta yer alan ücret girdi panelinde Ocak ayından itibaren yıllık ücret detaylarını sisteme ekleyebilirsin")
         
     st.info("Uygulamamız ile bordronuzdaki tutarların yaklaşık olmasını beklemekteyiz. __Çocuk zammı, kasa tazminatı__ gibi bireysel ödemeler ve bireysel sigorta gibi kesintiler henüz uygulamamıza dahil değildir", icon="❗")
-    st.info("Bilgilendirmeyi tamamladıysan '📣 Uygulama Hakkında' butonuna tıklayarak bilgi kutularını kapatabilirsin ",icon="✅")
+    st.info("Bilgilendirmeyi tamamladıysan '📣 Uygulama Hakkında' butonuna tıklayarak bilgi kutularını kapatabilirsin ",icon="💯")
 
 st.sidebar.header("Ücret Girdi Paneli")
 
