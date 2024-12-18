@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Dec 17 21:06:57 2024
-
-@author: 90544
-"""
-
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -395,20 +388,39 @@ with st.sidebar:
         st.session_state.info_shown_sidebar = not st.session_state.info_shown_sidebar
         
 
+
 if st.session_state.info_shown_sidebar:
-    st.info("Bu uygulama finansal planlamanı daha etkili bir şekilde yapmana yardımcı olmak için geliştirilmiştir. Tasarlanan bu özel uygulama ücret hesaplamalarını kolaylaştırmayı amaçlıyor. Ücret detaylarını uygulamaya girerek ya da son bordronu yükleyerek yıl içinde oluşacak yaklaşık net gelirini kolayca öğrenebileceksin")    
+    #st.caption("### Bu uygulama finansal planlamanı daha etkili bir şekilde yapmana yardımcı olmak için geliştirilmiştir. Tasarlanan bu özel uygulama ücret hesaplamalarını kolaylaştırmayı amaçlıyor. Ücret detaylarını uygulamaya girerek ya da son bordronu yükleyerek yıl içinde oluşacak yaklaşık net gelirini kolayca öğrenebileceksin")    
+    st.markdown("""
+    <style>
+    .custom-box {
+        background-color: #f0f9ff;
+        border: 1px solid #2196F3;
+        border-radius: 10px;
+        padding: 10px;
+        color: #333333;
+        margin-bottom: 16px;
+    }
+    </style>
+
+    <div class="custom-box">
+        Bu uygulama finansal planlamanı daha etkili bir şekilde yapmana yardımcı olmak için geliştirilmiştir. Tasarlanan bu özel uygulama ücret hesaplamalarını kolaylaştırmayı amaçlıyor. Ücret detaylarını uygulamaya girerek ya da son bordronu yükleyerek yıl içinde oluşacak yaklaşık net gelirini kolayca öğrenebileceksin
+    </div>
+    """, unsafe_allow_html=True)
 
     col1, col2 = st.columns(2)
-
+    
     with col1:
-        st.header("📂 Bordro Dosyası Yükleme")
-        st.info("Her ay sonu gelen bordro mailinin ekindeki bordro.html dosyasını yükleyebilirsin. Yükleme yaptığın ay ve sonrası otomatik doldurulacak ancak önceki aylara giriş yapman engellenecektir.",icon="💁")
+        with st.container(height=250,border=True):
+            st.write("📂 Bordro Dosyası Yükleme")
+            st.info("1️⃣ Her ay sonu gelen bordro mailinin ekindeki bordro.html dosyasını yükleyebilirsin. Yükleme yaptığın ay ve sonrası otomatik doldurulacak ancak önceki aylara giriş yapman engellenecektir.")
 
     with col2:
-        st.header("Manuel Giriş")
-        st.info("Eğer bordro yüklemeden tüm yıl içindeki net gelirlerini hesaplamak istiyorsan ,sol tarafta yer alan ücret girdi panelinde Ocak ayından itibaren 12 aylık ücret detaylarını sisteme eklemelisin",icon="💁")
+        with st.container(height=250,border=True):
+            st.write("✍🏼 Manuel Giriş")
+            st.info("2️⃣ Eğer bordro yüklemeden tüm yıl içindeki net gelirlerini hesaplamak istiyorsan, sol tarafta yer alan ücret girdi panelinde Ocak ayından itibaren yıllık ücret detaylarını sisteme ekleyebilirsin")
         
-    st.info("Uygulamamız ile bordronuzdaki tutarların yaklaşık olmasını beklemekteyiz. Çocuk zammı, kasa tazminatı gibi bazı bireysel ödemeler ve bireysel sigorta kesintileri gibi kesintiler henüz uygulamamıza dahil değildir",icon="⚖️")
+    st.info("Uygulamamız ile bordronuzdaki tutarların yaklaşık olmasını beklemekteyiz. __Çocuk zammı, kasa tazminatı__ gibi bireysel ödemeler ve bireysel sigorta gibi kesintiler henüz uygulamamıza dahil değildir", icon="❗")
     st.info("Bilgilendirmeyi tamamladıysan '📣 Uygulama Hakkında' butonuna tıklayarak bilgi kutularını kapatabilirsin ",icon="✅")
 
 st.sidebar.header("Ücret Girdi Paneli")
