@@ -55,9 +55,9 @@ ms_yukselme_B_brut=[0]*12
 
  
 
-igv = [2550.32,2550.32,2550.32,2550.32,2550.32,2550.32,3001.06,3400.42,3400.42,3400.42,3400.42,3400.42] #Gelir vergisi istisnası
+igv = [2550.32*1.3,2550.32*1.3,2550.32*1.3,2550.32*1.3,2550.32*1.3,2550.32*1.3,3001.06*1.3,3400.42*1.3,3400.42*1.3,3400.42*1.3,3400.42*1.3,3400.42*1.3] #Gelir vergisi istisnası
 
-tavan = [20002.5 * 7.5 if i < 6 else 20002.5 * 7.5 for i in range(12)] #Emekli sandığı tavanı
+tavan = [20002.5 * 7.5*1.3 if i < 6 else 20002.5 * 7.5*1.3 for i in range(12)] #Emekli sandığı tavanı
 
 devreden1 = [0]*14 #birinci devreden matrah
 
@@ -158,7 +158,7 @@ odemeler_listesi = [
 ]
 
 def vergi(kum, matrah):  # Vergi hesaplama fonksiyonu (doğru çalışan versiyon)
-    v = [110000, 230000, 870000, 3000000]  # Vergi dilimleri
+    v = [110000*43.93, 230000*43.93, 870000*43.93, 3000000*43.93]  # Vergi dilimleri
     o = [0.15, 0.2, 0.27, 0.35, 0.4]  # Vergi oranları
     kalan_matrah = matrah  # Kalan matrah miktarı
     toplam_vergi = 0  # Toplam vergi
@@ -184,7 +184,7 @@ def vergi(kum, matrah):  # Vergi hesaplama fonksiyonu (doğru çalışan versiyo
     return toplam_vergi
 
 def brut_vergi(kum,net):
-    v = [110000,230000,870000,3000000] # vergi dilimleri
+    v = [110000*43.93,230000*43.93,870000*43.93,3000000*43.93] # vergi dilimleri
     o = [0.15,0.2,0.27,0.35,0.4] #vergi oranları
     damga = 0.00759
     v_brut_bosluk = [0,0,0,0]
@@ -212,7 +212,7 @@ def brut_vergi(kum,net):
     return vergi_brutu
 
 def brut_vergi_sgk(kum,net):
-    v = [110000,230000,870000,3000000] # vergi dilimleri
+    v = [110000*43.93,230000*43.93,870000*43.93,3000000*43.93] # vergi dilimleri
     o = [0.15,0.2,0.27,0.35,0.4] #vergi oranları
     damga = 0.00759
     v_brut_bosluk = [0,0,0,0]
