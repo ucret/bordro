@@ -158,7 +158,7 @@ odemeler_listesi = [
 ]
 
 def vergi(kum, matrah):  # Vergi hesaplama fonksiyonu (doğru çalışan versiyon)
-    v = [110000*43.93, 230000*43.93, 870000*43.93, 3000000*43.93]  # Vergi dilimleri
+    v = [110000*1.44, 230000*1.44, 870000*1.44, 3000000*1.44]  # Vergi dilimleri
     o = [0.15, 0.2, 0.27, 0.35, 0.4]  # Vergi oranları
     kalan_matrah = matrah  # Kalan matrah miktarı
     toplam_vergi = 0  # Toplam vergi
@@ -184,7 +184,7 @@ def vergi(kum, matrah):  # Vergi hesaplama fonksiyonu (doğru çalışan versiyo
     return toplam_vergi
 
 def brut_vergi(kum,net):
-    v = [110000*43.93,230000*43.93,870000*43.93,3000000*43.93] # vergi dilimleri
+    v = [110000*1.44,230000*1.44,870000*1.44,3000000*1.44] # vergi dilimleri
     o = [0.15,0.2,0.27,0.35,0.4] #vergi oranları
     damga = 0.00759
     v_brut_bosluk = [0,0,0,0]
@@ -212,7 +212,7 @@ def brut_vergi(kum,net):
     return vergi_brutu
 
 def brut_vergi_sgk(kum,net):
-    v = [110000*43.93,230000*43.93,870000*43.93,3000000*43.93] # vergi dilimleri
+    v = [110000*1.44,230000*1.44,870000*1.44,3000000*1.44] # vergi dilimleri
     o = [0.15,0.2,0.27,0.35,0.4] #vergi oranları
     damga = 0.00759
     v_brut_bosluk = [0,0,0,0]
