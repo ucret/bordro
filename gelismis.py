@@ -17,7 +17,7 @@ send_aidat=[0]*12 #sendika aidatı
 
 yemek_net = [0]*12
 yemek_gun_say = [0]*12
-banka_yemek = [275 if i < 6 else 300 for i in range(12)]
+banka_yemek = [435 if i < 6 else 435 for i in range(12)]
 
 ek_gorev = [0]*12 #Ek Görev
 ek_gorev_brut = [0]*12 # Ek Görev brüt
