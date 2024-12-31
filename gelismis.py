@@ -763,7 +763,7 @@ if st.session_state.sidebar_open:
                         ,help="Hesaplama bordro verileriniz ile devam etmektedir",disabled=True)
                 
                 else:    
-                    Aylık[i] = st.number_input(f":money_with_wings: Maaş Tutarınız (Brüt TL)",step=1000,value=Aylık[i] if Aylik[i] =! 0 else Aylık[i - 1], key=f"Aylik_{i}",
+                    Aylık[i] = st.number_input(f":money_with_wings: Maaş Tutarınız (Brüt TL)",step=1000,value=Aylık[i] if Aylik[i] != 0 else Aylık[i - 1], key=f"Aylik_{i}",
                         help="Aylık ücretinizi bu alana girebilirsiniz (Bordronuzdaki 'Maaş' alanı)")
                 
                     ikramiye[i] = mt.ceil(Aylık[i] / 3)
