@@ -168,7 +168,7 @@ odemeler_listesi = [
     "Yüksek Verimlilik"
 ]
 
-Aylık = [39600,39600,39600,39600,39600,39600,47520,47520,47520,47520,47520,47520]
+
 
 def vergi(kum, matrah):  # Vergi hesaplama fonksiyonu (doğru çalışan versiyon)
     kalan_matrah = matrah  # Kalan matrah miktarı
@@ -513,32 +513,33 @@ if "sidebar_open" not in st.session_state:
 
 
         
-if st.session_state.info_shown_sidebar:    
-    st.info("Uygulamamız ile bordronuzdaki tutarların yaklaşık olmasını beklemekteyiz. __Çocuk zammı, kasa tazminatı__ gibi bireysel ödemeler ve bireysel sigorta gibi kesintiler henüz uygulamamıza dahil değildir", icon="❗")
-    st.info("Temmuz ayı maaşına Toplu İş Sözleşmesi'ndeki esaslara göre zam oranı tahminini de eklemen gerektiğini hatırlatmak isteriz 😊", icon="❗")
-    st.info("Bilgilendirmeyi tamamladıysan '📣 Uygulama Hakkında' butonuna tıklayarak bilgi kutularını kapatabilirsin ",icon="💯")
+# if st.session_state.info_shown_sidebar:    
+#     st.info("Uygulamamız ile bordronuzdaki tutarların yaklaşık olmasını beklemekteyiz. __Çocuk zammı, kasa tazminatı__ gibi bireysel ödemeler ve bireysel sigorta gibi kesintiler henüz uygulamamıza dahil değildir", icon="❗")
+#     st.info("Temmuz ayı maaşına Toplu İş Sözleşmesi'ndeki esaslara göre zam oranı tahminini de eklemen gerektiğini hatırlatmak isteriz 😊", icon="❗")
+#     st.info("Bilgilendirmeyi tamamladıysan '📣 Uygulama Hakkında' butonuna tıklayarak bilgi kutularını kapatabilirsin ",icon="💯")
 
 uploaded_file=None
 
-with st.container(border=True):
-    st.markdown('''
-    **:blue[Bu uygulama finansal planlamanı daha etkili bir şekilde yapmana yardımcı olmak için geliştirilmiştir. Tasarlanan bu özel uygulama ücret hesaplamalarını kolaylaştırmayı amaçlıyor. Ücret detaylarını uygulamaya girerek ya da son bordronu yükleyerek yıl içinde oluşacak yaklaşık net gelirini kolayca öğrenebilirsin.]**''')
+# with st.container(border=True):
+#     st.markdown('''
+#     **:blue[Bu uygulama finansal planlamanı daha etkili bir şekilde yapmana yardımcı olmak için geliştirilmiştir. Tasarlanan bu özel uygulama ücret hesaplamalarını kolaylaştırmayı amaçlıyor. Ücret detaylarını uygulamaya girerek ya da son bordronu yükleyerek yıl içinde oluşacak yaklaşık net gelirini kolayca öğrenebilirsin.]**''')
 
-with st.expander("Bordro Dosyası Yükleme (Önerilen Yöntem)",icon="📎",expanded=True):
-    st.markdown(
-        """
-        - 📥 **Dosya Adı**: `Bordro.html`
-        """,
-        help="Her ay sonu gelen bordro mailinin ekindeki bordro.html dosyasını yüklemelisin. Aynı zamanda IKON > Çalışan İşlemleri > E-Bordro sayfasından bordronu kendine mail atabilirsin"
-    )
+# with st.expander("Bordro Dosyası Yükleme (Önerilen Yöntem)",icon="📎",expanded=False):
+#     st.markdown(
+#         """
+#         - 📥 **Dosya Adı**: `Bordro.html`
+#         """,
+#         help="Her ay sonu gelen bordro mailinin ekindeki bordro.html dosyasını yüklemelisin. Aynı zamanda IKON > Çalışan İşlemleri > E-Bordro sayfasından bordronu kendine mail atabilirsin"
+#     )
     
-    uploaded_file = st.file_uploader(
-        "⬆️ HTML Bordro Dosyası Yükleme Alanı",
-        type=["html"],
-        help="İstediğin bir ayın bordro dosyanı buradan yükleyerek hesaplamalara başlayabilirsin",
-    )
+#     uploaded_file = st.file_uploader(
+#         "⬆️ HTML Bordro Dosyası Yükleme Alanı",
+#         type=["html"],
+#         help="İstediğin bir ayın bordro dosyanı buradan yükleyerek hesaplamalara başlayabilirsin",
+#     )
      
 
+uploaded_file = None # harici kod, sonra sil
 
 if uploaded_file is not None:  # Yalnızca dosya yüklendiyse çalıştır
     try:
@@ -640,39 +641,48 @@ if st.session_state.containers["cont_mg"]:
         with col1:
             st.write("✍🏼 Manuel Giriş (Alternatif Yöntem)")
         with col2:
-            if st.button(
-                "Manuel Giriş",
-                help="Manuel Giriş butonuna tıkladığında ücret girdi paneli açılır ve panel ile ücretlerini girerek tahmini hesaplamlar yapabilirsin",
-                key="btn_close_bordro"
-            ):
-                # Butona tıklandığında container'ı gizle ve bilgi mesajını göster
-                html_kutu_kapa("bordro_yukleme")
-                sidebar_ac()
-                cont_ucur("cont_mg", "info_mg")
-                placeholder2.empty()  # Placeholder temizlenir
-                
+            secim = st.selectbox("Ünvan Seç", ["Yeni Giriş Memur","Yeni Giriş Uzman"],index= None)
+            if secim != None:
+                sidebar_ac()    
+
+if secim == "Yeni Giriş Memur":## Seçime göre ücret
+    Aylık = [39600,39600,39600,39600,39600,39600,47520,47520,47520,47520,47520,47520]
+    Tazm_Top = [0]*12
+    onceki_aylik[0] = 0
+    ek_gorev = [0]*12
+    ilave[3] = 0 #temettü ve pys yok
+    jest[3] = 0 #Jestiyon 0
+elif secim == "Yeni Giriş Uzman":
+    Aylık = [39600,39600,39600,39600,39600,39600,47520,47520,47520,47520,47520,47520]
+    Tazm_Top = [24330]*12
+    onceki_aylik[0] = 0
+    ek_gorev = [0]*12
+    ilave[3] = 0 #temettü ve pys yok
+    jest[3] = 0 #Jestiyon 0    
+
+
 
 # Bilgi Mesajı: Manuel Giriş
-if st.session_state.info_messages["info_mg"]:
-    #st.info("Manuel giriş adımları;yaparken solda açılan pencerede yer alan tüm alanları doldurman gerekiyor. Alanların içindeki açıklamalar ücretlerini doğru girmen için yardımcı olacaktır.",icon="❗")
-        with st.expander("❗ Manuel Giriş Adımları",expanded=True):
-            st.markdown(
-            """
-            1️⃣ Aralık ayı maaş tutar bilgisini girmelisin (sadece 01.01.2025 tarihinden önce Bankamızda çalışmaya başladıysan).
+# if st.session_state.info_messages["info_mg"]:
+#     #st.info("Manuel giriş adımları;yaparken solda açılan pencerede yer alan tüm alanları doldurman gerekiyor. Alanların içindeki açıklamalar ücretlerini doğru girmen için yardımcı olacaktır.",icon="❗")
+#         with st.expander("❗ Manuel Giriş Adımları",expanded=True):
+#             st.markdown(
+#             """
+#             1️⃣ Aralık ayı maaş tutar bilgisini girmelisin (sadece 01.01.2025 tarihinden önce Bankamızda çalışmaya başladıysan).
             
-            2️⃣ Ocak ayına sabit ücretlerini (maaş, tazminat ...) girmelisin, uygulama kalan ayları otomatik dolduracaktır.
+#             2️⃣ Ocak ayına sabit ücretlerini (maaş, tazminat ...) girmelisin, uygulama kalan ayları otomatik dolduracaktır.
             
-            3️⃣ Pys Primi, temettü gibi değişken ücretlerini de ilgili aylar için girmelisin.
+#             3️⃣ Pys Primi, temettü gibi değişken ücretlerini de ilgili aylar için girmelisin.
             
-            4️⃣  Aşağıdaki tablo ve grafikler ile ücretlerinin yıl içindeki dağılımını görebilirsin.
+#             4️⃣  Aşağıdaki tablo ve grafikler ile ücretlerinin yıl içindeki dağılımını görebilirsin.
             
-            Bilmende Fayda Var:
+#             Bilmende Fayda Var:
             
-            - Uygulama şuan için kasa tazminatı, çocuk yardımı gibi bireysel ödemeleri kapsamamaktadır.
-            - Temmuz ayından itibaren Toplu İş Sözleşmesi’nde belirlenen esaslara göre zam artış oranı tahminini eklemelisin.
+#             - Uygulama şuan için kasa tazminatı, çocuk yardımı gibi bireysel ödemeleri kapsamamaktadır.
+#             - Temmuz ayından itibaren Toplu İş Sözleşmesi’nde belirlenen esaslara göre zam artış oranı tahminini eklemelisin.
             
-            """   
-        )
+#             """   
+#         )
     
 
 yemek_is_gunu = None
@@ -726,7 +736,7 @@ if st.session_state.sidebar_open:
 
 
     with st.sidebar.expander("🗓️ 2024 Aralık", expanded=True):
-        onceki_aylik[0] = st.number_input(":money_with_wings: Maaş Tutarınız (Brüt TL):", step=1000,value=0
+        onceki_aylik[0] = st.number_input(":money_with_wings: Maaş Tutarınız (Brüt TL):", step=1000,value=onceki_aylik[0]
             ,help="Bu alan 2024 yılı Aralık maaşınız ve 2025 Ocak maaşın arasındaki Munzam Sandık yükselme farkı hesaplaması için oluşturulmuştur. Bu alana giriş yapmazsan Munzam Sandık yükselme payı hesaplamalarda dikkate alınamayacaktır")
 
     for i, ay in enumerate(aylar):
@@ -763,16 +773,16 @@ if st.session_state.sidebar_open:
                         ,help="Hesaplama bordro verileriniz ile devam etmektedir",disabled=True)
                 
                 else:    
-                    Aylık[i] = st.number_input(f":money_with_wings: Maaş Tutarınız (Brüt TL)",step=1000,value=Aylık[i] if Aylik[i] != 0 else Aylık[i - 1], key=f"Aylik_{i}",
+                    Aylık[i] = st.number_input(f":money_with_wings: Maaş Tutarınız (Brüt TL)",step=1000,value=Aylık[i] if Aylık[i] != 0 else Aylık[i - 1], key=f"Aylik_{i}",
                         help="Aylık ücretinizi bu alana girebilirsiniz (Bordronuzdaki 'Maaş' alanı)")
                 
                     ikramiye[i] = mt.ceil(Aylık[i] / 3)
                     st.write(f":money_with_wings: İkramiye Tutarınız: {format(ikramiye[i], ',').replace(',', '.')} TL")
                 
-                    Tazm_Top[i] = st.number_input(f":money_with_wings: Tazminat Toplamınız (Brüt TL)", step=1000, value=Tazm_Top[i - 1] if i > 0 else 0, key=f"Tazm_Top_{i}",
+                    Tazm_Top[i] = st.number_input(f":money_with_wings: Tazminat Toplamınız (Brüt TL)", step=1000, value=Tazm_Top[i] if Tazm_Top[i] != 0 else Tazm_Top[i - 1], key=f"Tazm_Top_{i}",
                         help="Unvan, Yabancı Dil, Kambiyo, Mali Tahlil gibi tazminatlarınızın toplamını bu alana girebilirsiniz")
                 
-                    ek_gorev[i] = st.number_input(f":money_with_wings: İlave Ödemeleriniz (Net TL)", step=1000, value=ek_gorev[i - 1] if i > 0 else 0, key=f"ek_gorev_{i}"
+                    ek_gorev[i] = st.number_input(f":money_with_wings: İlave Ödemeleriniz (Net TL)", step=1000, value=ek_gorev[i] if ek_gorev[i] != 0 else ek_gorev[i - 1], key=f"ek_gorev_{i}"
                         ,help="Sabit net gelirlerinizi bu alana girebilirsiniz")
                 
                     yemek_gun_say[i]= st.number_input(f"🍔 Yemek Gün Sayınızı Giriniz", step=1, value=yemek_gun_say[i - 1] if i > 0 else 0, key=f"yemek_gun_say{i}")
@@ -806,13 +816,13 @@ if st.session_state.sidebar_open:
                         ,help="Hesaplama bordro verileriniz ile devam etmektedir",disabled=True)
             else:
                 if i==3:
-                    ilave[i] = st.number_input(f":money_with_wings: İlave Ödemeleriniz (Brüt TL)", step=1000, value=0, key=f"ilave_{i}"
+                    ilave[i] = st.number_input(f":money_with_wings: İlave Ödemeleriniz (Brüt TL)", step=1000, value = ilave[i], key=f"ilave_{i}"
                         ,help="Ay içerisinde almış olduğunuz ilave brüt ödeneklerinizin (Satış Primi, Pys Primi, Temettü) toplamını bu alana girebilirsiniz.")
-                    jest[i] = st.number_input(f"Jestiyon Tutarınız (Net TL)", step=1000, value=0, key=f"jest_{i}"
+                    jest[i] = st.number_input(f"Jestiyon Tutarınız (Net TL)", step=1000, value = jest[i], key=f"jest_{i}"
                         ,help="Jestiyon tutarınızı NET TL olarak bu alana girebilirsiniz")
                     
                 else:
-                    ilave[i] = st.number_input(f":money_with_wings: İlave Ödemeleriniz (Brüt TL)", step=1000, value=0, key=f"ilave_{i}"
+                    ilave[i] = st.number_input(f":money_with_wings: İlave Ödemeleriniz (Brüt TL)", step=1000, value= ilave[i], key=f"ilave_{i}"
                         ,help="Ay içerisinde almış olduğunuz ilave brüt ödeneklerinizin (Satış Primi, Pys Primi, Temettü) toplamını bu alana girebilirsiniz.")
 
 
@@ -951,7 +961,7 @@ kesinti_toplam = kesinti_esis_toplam + kesinti_gvdv_toplam + sum(ms_C) + sum(ms_
 
 
 
-dic = {"Toplam Brüt Ücret": Toplam,"Yaklaşık Net Tutar": net,"Yemek Çeki":(np.array(yemek_net) *np.array(yemek_index)),  
+dic = {"Toplam Brüt Ücret": Toplam,"Yaklaşık Net Tutar": net, "Vergi Oranı" : (np.array(gv)/np.array(vm)), "Yemek Çeki":(np.array(yemek_net) *np.array(yemek_index)),  
        "es matrah":sskm,
        "ES":sske,"IS":sski,
        
@@ -978,34 +988,35 @@ tablo = pd.DataFrame(dic, index=["Ocak","Şubat", "Mart","Nisan","Mayıs","Hazir
 
                                  "Eylül","Ekim","Kasım","Aralık"])
 
-columns = pd.MultiIndex.from_tuples([   # Sözlük ve gösterim sıralaması önemli
-    ("💸 💸 💸 💸 💸 💸 💸 💸 💸 💸", "Ücretler Toplamı"),
-    ("💸 💸 💸 💸 💸 💸 💸 💸 💸 💸", "Yaklaşık Net Tutar"),
-    ("💸 💸 💸 💸 💸 💸 💸 💸 💸 💸", "Yemek Çeki"),
 
-    ("📈 Matrah", "Emekli Sandığı"),
-    ("🏛️ Yasal Kesintiler", "Emekli Sandığı Üye Payı"),
-    ("🏛️ Yasal Kesintiler", "İşsizlik Sig. Üye Payı"),
-    
-    ("📈 Matrah", "Gelir Vergisi"),
-    ("🏛️ Yasal Kesintiler", "Gelir Vergisi"),
-    ("🏛️ Yasal Kesintiler", "Damga Vergisi"),
-    
-    ("ℹ️ Prim Ödemeleri Sonrası Oluşan", "Emekli Sandığı Devir Matrahı"),
-    ("ℹ️ Prim Ödemeleri Sonrası Oluşan", "Emk. Snd. Devir Mat. Kullanılan"),
+# columns = pd.MultiIndex.from_tuples([   # Sözlük ve gösterim sıralaması önemli
+#     ("💸 💸 💸 💸 💸 💸 💸 💸 💸 💸", "Ücretler Toplamı"),
+#     ("💸 💸 💸 💸 💸 💸 💸 💸 💸 💸", "Yaklaşık Net Tutar"),
+#     ("💸 💸 💸 💸 💸 💸 💸 💸 💸 💸", "Yemek Çeki"),
 
-    ("🪙 Munzam Sandık Kesinti", "Üye Payı"),
-    ("🪙 Munzam Sandık Kesinti", "Üye Yükselme Payı"),
+#     ("📈 Matrah", "Emekli Sandığı"),
+#     ("🏛️ Yasal Kesintiler", "Emekli Sandığı Üye Payı"),
+#     ("🏛️ Yasal Kesintiler", "İşsizlik Sig. Üye Payı"),
     
-    ("Yasal Asgari Ücret İadeleri", "Damga Vergisi İstisnası"),
-    ("Yasal Asgari Ücret İadeleri", "Vergi İstisnası"),
+#     ("📈 Matrah", "Gelir Vergisi"),
+#     ("🏛️ Yasal Kesintiler", "Gelir Vergisi"),
+#     ("🏛️ Yasal Kesintiler", "Damga Vergisi"),
+    
+#     ("ℹ️ Prim Ödemeleri Sonrası Oluşan", "Emekli Sandığı Devir Matrahı"),
+#     ("ℹ️ Prim Ödemeleri Sonrası Oluşan", "Emk. Snd. Devir Mat. Kullanılan"),
+
+#     ("🪙 Munzam Sandık Kesinti", "Üye Payı"),
+#     ("🪙 Munzam Sandık Kesinti", "Üye Yükselme Payı"),
+    
+#     ("Yasal Asgari Ücret İadeleri", "Damga Vergisi İstisnası"),
+#     ("Yasal Asgari Ücret İadeleri", "Vergi İstisnası"),
 
     
-    ("🍕 🌮 Yemek Ücreti/Çeki", "     Brüt TL     "),
-    ("🍕 🌮 Yemek Ücreti/Çeki", "     Net TL     "),
-])
+#     ("🍕 🌮 Yemek Ücreti/Çeki", "     Brüt TL     "),
+#     ("🍕 🌮 Yemek Ücreti/Çeki", "     Net TL     "),
+# ])
 
-tablo.columns = columns
+# tablo.columns = columns
  
 
 tablo_ms = pd.DataFrame(dic_vrb, index=["Ocak","Şubat", "Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos",
@@ -1036,6 +1047,15 @@ tablo_ms.loc["Toplam"] = toplamat_ms
 tablo_ms.loc["Ortalama"]= ortalamat_ms
 
 tablo = tablo.apply(lambda x: x.map("{:,.2f}₺".format) if x.dtype == "float" else x)
+
+tablo["Vergi Oranı"] = (
+    tablo["Vergi Oranı"]
+    .str.replace("₺", "", regex=False)  # ₺ işaretini kaldır
+    .str.replace(",", "", regex=False)  # Binlik ayırıcıyı kaldır
+    .astype(float)  # Float tipe dönüştür
+)
+
+tablo["Vergi Oranı"] = tablo["Vergi Oranı"].apply(lambda x: f"{x * 100:.2f}%")
 
 tablo_ms = tablo_ms.apply(lambda x: x.map("{:,.2f}₺".format) if x.dtype == "float" else x)
 
@@ -1091,19 +1111,22 @@ chart = alt.Chart(data).transform_fold(
 
 
 # Expander içinde grafiği göster
-with st.expander("Aylık Ücretler Detayları", expanded=False):
-    st.altair_chart(chart, use_container_width=True)
+# with st.expander("Aylık Ücretler Detayları", expanded=False):
+#     st.altair_chart(chart, use_container_width=True)
   
 
 
 
 #------------------------------------------------------------------------------------------
+df = pd.DataFrame(
+    np.random.randn(10, 5), columns=("col %d" % i for i in range(5))
+)
+
 
 
 #streamlit tablo gösterimi
 with st.expander("Yıllık Ücretleriniz Tablo Gösterimi"):
-        st.dataframe(tablo.style.set_table_styles(
-    ))
+        st.table(tablo.iloc[:, :3])
 
 
 
@@ -1118,12 +1141,12 @@ def tutar_format(value):
 #---- PİE Charts ---- 
 
 
-with st.expander("Yıllık Ücret Dağılımı", expanded=False):
-    # Donut chart verisi
-    donut_data = pd.DataFrame({
-        "Kategori": ["Net Ücret", "Kesintiler"],
-        "Tutar": [sum(net), kesinti_toplam]
-    })
+# with st.expander("Yıllık Ücret Dağılımı", expanded=False):
+#     # Donut chart verisi
+#     donut_data = pd.DataFrame({
+#         "Kategori": ["Net Ücret", "Kesintiler"],
+#         "Tutar": [sum(net), kesinti_toplam]
+#     })
 
     # Tutarları formatlayalım
     a = tutar_format(sum(net))
