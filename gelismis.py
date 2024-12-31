@@ -168,6 +168,8 @@ odemeler_listesi = [
     "Yüksek Verimlilik"
 ]
 
+Aylık = [39600,39600,39600,39600,39600,39600,47520,47520,47520,47520,47520,47520]
+
 def vergi(kum, matrah):  # Vergi hesaplama fonksiyonu (doğru çalışan versiyon)
     kalan_matrah = matrah  # Kalan matrah miktarı
     toplam_vergi = 0  # Toplam vergi
