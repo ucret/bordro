@@ -637,12 +637,9 @@ placeholder2 = st.empty()
 # Manuel Giriş Container
 if st.session_state.containers["cont_mg"]:
     with placeholder2.container(border=True):  # Placeholder içinde container
-        col1, col2 = st.columns(2)
-        with col1:
-            st.write("✍🏼 Manuel Giriş (Alternatif Yöntem)")
-        with col2:
-            secim = st.selectbox("Ünvan Seç", ["Yeni Giriş Memur","Yeni Giriş Uzman"],index= None)
-            if secim != None:
+
+        secim = st.selectbox("Ünvan Seç", ["Yeni Giriş Memur","Yeni Giriş Uzman"],index= None)
+        if secim != None:
                 sidebar_ac()    
 
 if secim == "Yeni Giriş Memur":## Seçime göre ücret
@@ -728,8 +725,8 @@ if 'info_shown_sidebar' not in st.session_state:
 
 
 if st.session_state.sidebar_open: 
-    if st.sidebar.button("📣 Uygulama Hakkında"):
-        st.session_state.info_shown_sidebar = not st.session_state.info_shown_sidebar
+    # if st.sidebar.button("📣 Uygulama Hakkında"):
+    #     st.session_state.info_shown_sidebar = not st.session_state.info_shown_sidebar
     
 
     st.sidebar.header("Ücret Girdi Paneli")
@@ -1203,6 +1200,5 @@ def tutar_format(value):
 
     # Streamlit üzerinden Donut Chart gösterimi
     st.altair_chart(donut_chart, use_container_width=True)
-
 
 
