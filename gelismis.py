@@ -57,8 +57,8 @@ sske = [0]*12 #Emekli sandığı payı
 sski = [0]*12 #İşsizlik çalışan payı
 dv=[0] * 12
 
-
-
+dil_tazminatı_tutarı = [21190,17650,0]
+PYS_Katsayısı = 1
 
 ms_C = [0]*12 # Munzam Sandik Çalışan payı
 
@@ -191,6 +191,7 @@ def vergi(kum, matrah):  # Vergi hesaplama fonksiyonu (doğru çalışan versiyo
     # Eğer matrah en üst dilimlere giriyorsa, kalan matrah için oranı uygula
     if kalan_matrah > 0:
         toplam_vergi += kalan_matrah * o[-1]
+        
     
     return toplam_vergi
 
@@ -505,6 +506,32 @@ def html_kutu_kapa(exp_key):
 
 
 
+# Giriş bilgilerini session state'de tutma
+if 'giris_yapildi' not in st.session_state:
+    st.session_state.giris_yapildi = False
+
+# Giriş yapılmadıysa giriş formunu göster
+if not st.session_state.giris_yapildi:
+    st.title("Brütüs - Ücret Ekibi")
+    
+    with st.form("giris_formu"):
+        st.subheader("Giriş Yapın")
+        kullanici = st.text_input("Sicil No")
+        sifre = st.text_input("Şifre", type="password")
+        giris_butonu = st.form_submit_button("Giriş Yap")
+        
+        if giris_butonu:
+            # Burada gerçek kullanıcı doğrulama mantığınızı ekleyebilirsiniz
+            if kullanici == "ikyb-brütüs" and sifre == "ücret2025":
+                st.session_state.giris_yapildi = True
+                st.success("Giriş başarılı! Sayfa yenileniyor...")
+                st.rerun()
+            else:
+                st.error("Hatalı sicil no veya şifre!")
+    
+    # Giriş yapılmadıysa diğer içeriği gösterme
+    st.stop()
+
 if "info_shown_sidebar" not in st.session_state:
     st.session_state.info_shown_sidebar = False
 
@@ -604,7 +631,7 @@ if uploaded_file is not None:  # Yalnızca dosya yüklendiyse çalıştır
                         Bilmende Fayda Var:
                         
                         - Uygulama şuan için kasa tazminatı, çocuk yardımı gibi bireysel ödemeleri kapsamamaktadır.
-                        - Temmuz ayından itibaren Toplu İş Sözleşmesi’nde belirlenen esaslara göre zam artış oranı tahminini eklemelisin.
+                        - Temmuz ayından itibaren Toplu İş Sözleşmesi'nde belirlenen esaslara göre zam artış oranı tahminini eklemelisin.
                         
                         """                    
                             )
@@ -637,25 +664,236 @@ placeholder2 = st.empty()
 # Manuel Giriş Container
 if st.session_state.containers["cont_mg"]:
     with placeholder2.container(border=True):  # Placeholder içinde container
-
-        secim = st.selectbox("Ünvan Seç", ["Yeni Giriş Memur","Yeni Giriş Uzman"],index= None)
+        filtre_unvan = st.selectbox("Unvan Filtresi",["Giriş Unvanları","Memur Kulvarı","Uzmanlar","Yöneticiler"],index=0)
+        # Ünvan seçimi üstte
+        if filtre_unvan == "Giriş Unvanları":
+            secim = st.selectbox("Ünvan Seç", ["Yeni Giriş Memur","Stajyer Uzman","Güvenlik Görevlisi","Sistem Uzmanı-(4C)"],index= None)
+        elif filtre_unvan == "Memur Kulvarı":
+            secim = st.selectbox("Ünvan Seç", ["Memur","Yetkili(4R)","Yetkili(5S)","Yetkili(5R)","II. Müdür (6S)","II. Müdür (6R)"],index= None)
+        elif filtre_unvan == "Uzmanlar":
+            secim = st.selectbox("Ünvan Seç", ["Uzman Yrd.","Kıdemli Uzman Yrd.","5.Sınıf Uzman","3.Sınıf Uzman"],index= None)
+        elif filtre_unvan == "Yöneticiler":
+            secim = st.selectbox("Ünvan Seç", ["7B","7A","8B","8A","9B","9A","10B","10A","11B","11A"],index= None)
         if secim != None:
-                sidebar_ac()    
+            sidebar_ac()
+        
+        # İki sütunlu düzen
+        col1, col2 = st.columns(2)
+        
+        # Sol sütun
+        with col1:
+            Temmuz_zam_oranı = st.number_input(
+                "Temmuz Zam Oranınızı Giriniz (%)", 
+                min_value=0.0,
+                max_value=100.0,
+                value=20.0,
+                step=0.1,
+                key="Zam Oranı",
+                help="Örnek: %20 zam için 20 giriniz"
+            ) / 100  # Yüzdeyi ondalık sayıya çevir
+            
+            Temettü_maaş_sayısı = st.number_input(
+                "Temettü Maaş Sayısınızı Giriniz",
+                min_value=0.0,
+                max_value=100.0,
+                value=1.0,
+                step=0.1,
+                key="Temettü Maaş Sayısı",
+                help="Örnek: 1 maaş için 1 giriniz"
+            )
+            Jestiyon_Artış_Oranı  = st.number_input(
+                    "Jestiyon Artış Oranınızı Giriniz",
+                    min_value=0.0,
+                    max_value=200.0,
+                    value=30.0,
+                    step=10.0,
+                    key="Jestiyon Artış Oranı",
+                    help="Örnek: 30 giriniz"
+                    )/100
+        
+        # Sağ sütun
+        with col2:
+             PYS_Maaş_sayısı = st.number_input(
+                    "PYS Maaş Sayısınızı Giriniz",
+                    min_value=0.0,
+                    max_value=100.0,
+                    value=2.0,
+                    step=0.1,
+                    key="PYS Maaş Sayısı",
+                    help="Örnek: 1 maaş için 1 giriniz"
+            )
+             dil_tazminatı = st.selectbox("Dil Tazminatı",options=["1. Derece","2. Derece","Yok"],index=2)
+             Jestiyon_HYO_Oranı  = st.number_input(
+                    "Jestiyon HYO Oranınızı Giriniz",
+                    min_value=80.0,
+                    max_value=160.0,
+                    value=100.0,
+                    step=0.1,
+                    key="Jestiyon HYO Oranı",
+                    help="Örnek: 100 giriniz"
+                    )/100
+
+
 
 if secim == "Yeni Giriş Memur":## Seçime göre ücret
-    Aylık = [39600,39600,39600,39600,39600,39600,47520,47520,47520,47520,47520,47520]
-    Tazm_Top = [0]*12
+    Aylık = [39600]*12
+    Tazm_Top = [dil_tazminatı_tutarı[["1. Derece","2. Derece","Yok"].index(dil_tazminatı)]]*12  # Tüm aylar için aynı değer
     onceki_aylik[0] = 0
     ek_gorev = [0]*12
-    ilave[3] = 0 #temettü ve pys yok
-    jest[3] = 0 #Jestiyon 0
-elif secim == "Yeni Giriş Uzman":
-    Aylık = [39600,39600,39600,39600,39600,39600,47520,47520,47520,47520,47520,47520]
-    Tazm_Top = [24330]*12
+    jest[3] = 0
+    
+elif secim == "Stajyer Uzman":
+    Aylık = [39600]*12
+    Tazm_Top = [(24330 + dil_tazminatı_tutarı[["1. Derece","2. Derece","Yok"].index(dil_tazminatı)])]*12  # Tüm aylar için aynı değer
     onceki_aylik[0] = 0
     ek_gorev = [0]*12
-    ilave[3] = 0 #temettü ve pys yok
     jest[3] = 0 #Jestiyon 0    
+elif secim == "Güvenlik Görevlisi":
+    Aylık = [36750]*12
+    Tazm_Top = [( dil_tazminatı_tutarı[["1. Derece","2. Derece","Yok"].index(dil_tazminatı)])]*12  # Tüm aylar için aynı değer
+    onceki_aylik[0] = 0
+    ek_gorev = [0]*12
+    jest[3] = 0 #Jestiyon 0
+elif secim == "Sistem Uzmanı-(4C)":
+    Aylık = [39600]*12
+    Tazm_Top = [( 87570 + dil_tazminatı_tutarı[["1. Derece","2. Derece","Yok"].index(dil_tazminatı)])]*12  # Tüm aylar için aynı değer
+    onceki_aylik[0] = 0
+    ek_gorev = [0]*12
+    jest[3] = 0 #Jestiyon 0
+elif secim == "Memur":
+    Aylık = [48317]*12
+    Tazm_Top = [(dil_tazminatı_tutarı[["1. Derece","2. Derece","Yok"].index(dil_tazminatı)])]*12  # Tüm aylar için aynı değer
+    onceki_aylik[0] = 40264
+    ek_gorev = [0]*12
+    jest[3] = 0 #Jestiyon 0
+elif secim == "Yetkili(4R)":
+    Aylık = [53276]*12
+    Tazm_Top = [(14690 + dil_tazminatı_tutarı[["1. Derece","2. Derece","Yok"].index(dil_tazminatı)])]*12  # Tüm aylar için aynı değer
+    onceki_aylik[0] = 44396
+    ek_gorev = [0]*12
+    jest[3] = 0 #Jestiyon 0
+elif secim == "Yetkili(5S)":
+    Aylık = [55730]*12
+    Tazm_Top = [(18360 + dil_tazminatı_tutarı[["1. Derece","2. Derece","Yok"].index(dil_tazminatı)])]*12  # Tüm aylar için aynı değer
+    onceki_aylik[0] = 46441
+    ek_gorev = [0]*12
+    jest[3] = 0 #Jestiyon 0
+elif secim == "Yetkili(5R)":
+    Aylık = [65344]*12
+    Tazm_Top = [(22030 + dil_tazminatı_tutarı[["1. Derece","2. Derece","Yok"].index(dil_tazminatı)])]*12  # Tüm aylar için aynı değer
+    onceki_aylik[0] = 54454
+    ek_gorev = [0]*12
+    jest[3] = 0 #Jestiyon 0
+elif secim == "II. Müdür (6S)":
+    Aylık = [63765]*12
+    Tazm_Top = [(51390 + dil_tazminatı_tutarı[["1. Derece","2. Derece","Yok"].index(dil_tazminatı)])]*12  # Tüm aylar için aynı değer
+    onceki_aylik[0] = 53138
+    ek_gorev = [0]*12
+    jest[3] = 124671
+    PYS_Katsayısı = 0
+elif secim == "II. Müdür (6R)":
+    Aylık = [68883]*12
+    Tazm_Top = [(55060 + dil_tazminatı_tutarı[["1. Derece","2. Derece","Yok"].index(dil_tazminatı)])]*12  # Tüm aylar için aynı değer
+    onceki_aylik[0] = 57402
+    ek_gorev = [0]*12
+    jest[3] = 124671
+    PYS_Katsayısı = 0
+elif secim == "7B":
+    Aylık = [69146]*12
+    Tazm_Top = [(73420 + dil_tazminatı_tutarı[["1. Derece","2. Derece","Yok"].index(dil_tazminatı)])]*12  # Tüm aylar için aynı değer
+    onceki_aylik[0] = 57622
+    ek_gorev = [0]*12
+    jest[3] = 169433
+    PYS_Katsayısı = 0
+elif secim == "7A":
+    Aylık = [74901]*12
+    Tazm_Top = [(77090 + dil_tazminatı_tutarı[["1. Derece","2. Derece","Yok"].index(dil_tazminatı)])]*12  # Tüm aylar için aynı değer
+    onceki_aylik[0] = 62418
+    ek_gorev = [0]*12
+    jest[3] = 191873
+    PYS_Katsayısı = 0
+elif secim == "8B":
+    Aylık = [80994]*12
+    Tazm_Top = [(80760 + dil_tazminatı_tutarı[["1. Derece","2. Derece","Yok"].index(dil_tazminatı)])]*12  # Tüm aylar için aynı değer
+    onceki_aylik[0] = 67495
+    ek_gorev = [0]*12
+    jest[3] = 224409
+    PYS_Katsayısı = 0
+elif secim == "8A":
+    Aylık = [86977]*12
+    Tazm_Top = [(84420 + dil_tazminatı_tutarı[["1. Derece","2. Derece","Yok"].index(dil_tazminatı)])]*12  # Tüm aylar için aynı değer
+    onceki_aylik[0] = 72481
+    ek_gorev = [0]*12
+    jest[3] = 274902    
+    PYS_Katsayısı = 0
+elif secim == "9B":
+    Aylık = [94348]*12
+    Tazm_Top = [(109760 + dil_tazminatı_tutarı[["1. Derece","2. Derece","Yok"].index(dil_tazminatı)])]*12  # Tüm aylar için aynı değer
+    onceki_aylik[0] = 78623
+    ek_gorev = [0]*12
+    jest[3] = 366536    
+    PYS_Katsayısı = 0
+elif secim == "9A":
+    Aylık = [100043]*12
+    Tazm_Top = [(117590 + 6230 + dil_tazminatı_tutarı[["1. Derece","2. Derece","Yok"].index(dil_tazminatı)])]*12  # Tüm aylar için aynı değer
+    onceki_aylik[0] = 83370
+    ek_gorev = [0]*12
+    jest[3] = 487638
+    PYS_Katsayısı = 0
+elif secim == "10B":
+    Aylık = [108329]*12
+    Tazm_Top = [(125420 + 7460 + dil_tazminatı_tutarı[["1. Derece","2. Derece","Yok"].index(dil_tazminatı)])]*12  # Tüm aylar için aynı değer
+    onceki_aylik[0] = 90274
+    ek_gorev = [44330]*12
+    jest[3] = 650184    
+    PYS_Katsayısı = 0
+elif secim == "10A":
+    Aylık = [116577]*12
+    Tazm_Top = [(129340 + 7460 + dil_tazminatı_tutarı[["1. Derece","2. Derece","Yok"].index(dil_tazminatı)])]*12  # Tüm aylar için aynı değer
+    onceki_aylik[0] = 97148
+    ek_gorev = [59100]*12
+    jest[3] = 718623    
+    PYS_Katsayısı = 0
+elif secim == "11B":
+    Aylık = [127639]*12
+    Tazm_Top = [(137190 + 7460 + dil_tazminatı_tutarı[["1. Derece","2. Derece","Yok"].index(dil_tazminatı)])]*12  # Tüm aylar için aynı değer
+    onceki_aylik[0] = 106366
+    ek_gorev = [73730]*12
+    jest[3] = 796602    
+    PYS_Katsayısı = 0
+elif secim == "11A":
+    Aylık = [136927]*12
+    Tazm_Top = [(145820 + 7460 + dil_tazminatı_tutarı[["1. Derece","2. Derece","Yok"].index(dil_tazminatı)])]*12  # Tüm aylar için aynı değer
+    onceki_aylik[0] = 114106
+    ek_gorev = [88500]*12
+    jest[3] = 976119    
+    PYS_Katsayısı = 0
+elif secim == "Uzman Yrd.":
+    Aylık = [43266]*12
+    Tazm_Top = [(52930 + dil_tazminatı_tutarı[["1. Derece","2. Derece","Yok"].index(dil_tazminatı)])]*12  # Tüm aylar için aynı değer
+    onceki_aylik[0] = 36055
+    ek_gorev = [0]*12
+    jest[3] = 0
+elif secim == "Kıdemli Uzman Yrd.":
+    Aylık = [53846]*12
+    Tazm_Top = [(58820 + dil_tazminatı_tutarı[["1. Derece","2. Derece","Yok"].index(dil_tazminatı)])]*12  # Tüm aylar için aynı değer
+    onceki_aylik[0] = 44872
+    ek_gorev = [0]*12
+    jest[3] = 0
+elif secim == "5.Sınıf Uzman":
+    Aylık = [59766]*12
+    Tazm_Top = [(67620 + dil_tazminatı_tutarı[["1. Derece","2. Derece","Yok"].index(dil_tazminatı)])]*12  # Tüm aylar için aynı değer
+    onceki_aylik[0] = 49805
+    ek_gorev = [0]*12
+    jest[3] = 124671
+    PYS_Katsayısı = 0
+elif secim == "3.Sınıf Uzman":
+    Aylık = [65409]*12
+    Tazm_Top = [(70560 + dil_tazminatı_tutarı[["1. Derece","2. Derece","Yok"].index(dil_tazminatı)])]*12  # Tüm aylar için aynı değer
+    onceki_aylik[0] = 54507
+    ek_gorev = [0]*12
+    jest[3] = 128367
+    PYS_Katsayısı = 0
 
 
 
@@ -676,7 +914,7 @@ elif secim == "Yeni Giriş Uzman":
 #             Bilmende Fayda Var:
             
 #             - Uygulama şuan için kasa tazminatı, çocuk yardımı gibi bireysel ödemeleri kapsamamaktadır.
-#             - Temmuz ayından itibaren Toplu İş Sözleşmesi’nde belirlenen esaslara göre zam artış oranı tahminini eklemelisin.
+#             - Temmuz ayından itibaren Toplu İş Sözleşmesi'nde belirlenen esaslara göre zam artış oranı tahminini eklemelisin.
             
 #             """   
 #         )
@@ -696,9 +934,9 @@ if 'tables' in locals() and len(tables) > 3:  # tables tanımlı ve en az 4 tabl
                 if match:
                     yemek_is_gunu = int(match.group(1))
                     break
-else:
+            else:
     # Eğer tables tanımlı değilse veya yeterince tablo yoksa varsayılan değer
-    yemek_is_gunu = 0  # Varsayılan değer
+                yemek_is_gunu = 0  # Varsayılan değer
 
 yemek_index=[0] * 12 
 
@@ -769,31 +1007,56 @@ if st.session_state.sidebar_open:
                     ek_gorev[i] = st.number_input(f":money_with_wings: İlave Ödemeleriniz (Net TL)", step=1000, value=html_net_gelir_a, key=f"ek_gorev_{i}"
                         ,help="Hesaplama bordro verileriniz ile devam etmektedir",disabled=True)
                 
-                else:    
-                    Aylık[i] = st.number_input(f":money_with_wings: Maaş Tutarınız (Brüt TL)",step=1000,value=Aylık[i] if Aylık[i] != 0 else Aylık[i - 1], key=f"Aylik_{i}",
-                        help="Aylık ücretinizi bu alana girebilirsiniz (Bordronuzdaki 'Maaş' alanı)")
-                
-                    ikramiye[i] = mt.ceil(Aylık[i] / 3)
-                    st.write(f":money_with_wings: İkramiye Tutarınız: {format(ikramiye[i], ',').replace(',', '.')} TL")
-                
-                    Tazm_Top[i] = st.number_input(f":money_with_wings: Tazminat Toplamınız (Brüt TL)", step=1000, value=Tazm_Top[i] if Tazm_Top[i] != 0 else Tazm_Top[i - 1], key=f"Tazm_Top_{i}",
-                        help="Unvan, Yabancı Dil, Kambiyo, Mali Tahlil gibi tazminatlarınızın toplamını bu alana girebilirsiniz")
-                
-                    ek_gorev[i] = st.number_input(f":money_with_wings: İlave Ödemeleriniz (Net TL)", step=1000, value=ek_gorev[i] if ek_gorev[i] != 0 else ek_gorev[i - 1], key=f"ek_gorev_{i}"
-                        ,help="Sabit net gelirlerinizi bu alana girebilirsiniz")
-                
-                    yemek_gun_say[i]= st.number_input(f"🍔 Yemek Gün Sayınızı Giriniz", step=1, value=yemek_gun_say[i - 1] if i > 0 else 0, key=f"yemek_gun_say{i}")
+                else:#Bordro yoksa
+                    if i!=6:
+                        Aylık[i] = st.number_input(f":money_with_wings: Maaş Tutarınız (Brüt TL)",step=1000,value=Aylık[i-1] if Aylık[i] != 0 else Aylık[i], key=f"Aylik_{i}",
+                            help="Aylık ücretinizi bu alana girebilirsiniz (Bordronuzdaki 'Maaş' alanı)")
                     
-                    if i==0 or i==6:
-                        yemek_secim[i]=st.radio("",options=["Nakit","Yemek Çeki"],index=yemek_index[i] if i == 0 else ["Nakit", "Yemek Çeki"].index(yemek_secim[i - 1]),key=f"yemek_secim_{i}",horizontal=True)
+                        ikramiye[i] = mt.ceil(Aylık[i] / 3)
+                        st.write(f":money_with_wings: İkramiye Tutarınız: {format(ikramiye[i], ',').replace(',', '.')} TL")
+                    
+                        Tazm_Top[i] = st.number_input(f":money_with_wings: Tazminat Toplamınız (Brüt TL)", step=1000, value=Tazm_Top[i-1] if Tazm_Top[i] != 0 else Tazm_Top[i], key=f"Tazm_Top_{i}",
+                            help="Unvan, Yabancı Dil, Kambiyo, Mali Tahlil gibi tazminatlarınızın toplamını bu alana girebilirsiniz")
+                    
+                        ek_gorev[i] = st.number_input(f":money_with_wings: İlave Ödemeleriniz (Net TL)", step=1000, value=ek_gorev[i-1] if ek_gorev[i] != 0 else ek_gorev[i], key=f"ek_gorev_{i}"
+                            ,help="Sabit net gelirlerinizi bu alana girebilirsiniz")
+                    
+                        yemek_gun_say[i]= st.number_input(f"🍔 Yemek Gün Sayınızı Giriniz", step=1, value=yemek_gun_say[i - 1] if i > 0 else 0, key=f"yemek_gun_say{i}")
+                        
+                        if i==0 or i==6:
+                            yemek_secim[i]=st.radio("",options=["Nakit","Yemek Çeki"],index=yemek_index[i] if i == 0 else ["Nakit", "Yemek Çeki"].index(yemek_secim[i - 1]),key=f"yemek_secim_{i}",horizontal=True)
+                        else:
+                            yemek_secim[i]=yemek_secim[i-1]
+                        
+                        yemek_net[i]=yemek_gun_say[i] * banka_yemek[i]
+                        
+                        asgari_ucret_uyari(Aylık[i]+ikramiye[i]+Tazm_Top[i]+ek_gorev[i])
+                        yemek_index[i] = 1 if yemek_secim[i]=="Yemek Çeki" else 0
                     else:
-                        yemek_secim[i]=yemek_secim[i-1]
+                        Aylık[i] = st.number_input(f":money_with_wings: Maaş Tutarınız (Brüt TL)",step=1000,value=mt.ceil(Aylık[i-1]*(1+ Temmuz_zam_oranı)),
+                            help="Aylık ücretinizi bu alana girebilirsiniz (Bordronuzdaki 'Maaş' alanı)")
                     
-                    yemek_net[i]=yemek_gun_say[i] * banka_yemek[i]
+                        ikramiye[i] = mt.ceil(Aylık[i] / 3)
+                        st.write(f":money_with_wings: İkramiye Tutarınız: {format(ikramiye[i], ',').replace(',', '.')} TL")
                     
-                    asgari_ucret_uyari(Aylık[i]+ikramiye[i]+Tazm_Top[i]+ek_gorev[i])
-                    yemek_index[i] = 1 if yemek_secim[i]=="Yemek Çeki" else 0
-                
+                        Tazm_Top[i] = st.number_input(f":money_with_wings: Tazminat Toplamınız (Brüt TL)", step=1000, value=Tazm_Top[i-1] if Tazm_Top[i] != 0 else Tazm_Top[i - 1], key=f"Tazm_Top_{i}",
+                            help="Unvan, Yabancı Dil, Kambiyo, Mali Tahlil gibi tazminatlarınızın toplamını bu alana girebilirsiniz")
+                    
+                        ek_gorev[i] = st.number_input(f":money_with_wings: İlave Ödemeleriniz (Net TL)", step=1000, value=ek_gorev[i-1] if ek_gorev[i] != 0 else ek_gorev[i - 1], key=f"ek_gorev_{i}"
+                            ,help="Sabit net gelirlerinizi bu alana girebilirsiniz")
+                    
+                        yemek_gun_say[i]= st.number_input(f"🍔 Yemek Gün Sayınızı Giriniz", step=1, value=yemek_gun_say[i - 1] if i > 0 else 0, key=f"yemek_gun_say{i}")
+                        
+                        if i==0 or i==6:
+                            yemek_secim[i]=st.radio("",options=["Nakit","Yemek Çeki"],index=yemek_index[i] if i == 0 else ["Nakit", "Yemek Çeki"].index(yemek_secim[i - 1]),key=f"yemek_secim_{i}",horizontal=True)
+                        else:
+                            yemek_secim[i]=yemek_secim[i-1]
+                        
+                        yemek_net[i]=yemek_gun_say[i] * banka_yemek[i]
+                            
+                        asgari_ucret_uyari(Aylık[i]+ikramiye[i]+Tazm_Top[i]+ek_gorev[i])
+                        yemek_index[i] = 1 if yemek_secim[i]=="Yemek Çeki" else 0              
+                                   
                 
                 send_aidat[i]=Aylık[i] * 0.015
                             
@@ -813,9 +1076,9 @@ if st.session_state.sidebar_open:
                         ,help="Hesaplama bordro verileriniz ile devam etmektedir",disabled=True)
             else:
                 if i==3:
-                    ilave[i] = st.number_input(f":money_with_wings: İlave Ödemeleriniz (Brüt TL)", step=1000, value = ilave[i], key=f"ilave_{i}"
+                    ilave[i] = st.number_input(f":money_with_wings: İlave Ödemeleriniz (Brüt TL)", step=1000, value = int(onceki_aylik[0] * (Temettü_maaş_sayısı + PYS_Maaş_sayısı*PYS_Katsayısı)), key=f"ilave_{i}"
                         ,help="Ay içerisinde almış olduğunuz ilave brüt ödeneklerinizin (Satış Primi, Pys Primi, Temettü) toplamını bu alana girebilirsiniz.")
-                    jest[i] = st.number_input(f"Jestiyon Tutarınız (Net TL)", step=1000, value = jest[i], key=f"jest_{i}"
+                    jest[i] = st.number_input(f"Jestiyon Tutarınız (Net TL)", step=1000, value = int(jest[i] * Jestiyon_HYO_Oranı* (1+Jestiyon_Artış_Oranı)) , key=f"jest_{i}"
                         ,help="Jestiyon tutarınızı NET TL olarak bu alana girebilirsiniz")
                     
                 else:
@@ -1200,5 +1463,10 @@ def tutar_format(value):
 
     # Streamlit üzerinden Donut Chart gösterimi
     st.altair_chart(donut_chart, use_container_width=True)
+
+
+
+# Giriş yapıldıysa ana uygulamayı göster
+# Buradan sonra mevcut kodunuz devam edecek
 
 
