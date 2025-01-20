@@ -508,7 +508,11 @@ def html_kutu_kapa(exp_key):
 
 # Giriş bilgilerini session state'de tutma
 if 'giris_yapildi' not in st.session_state:
-    st.session_state.giris_yapildi = False
+    # URL'den oturum durumunu kontrol et
+    if 'auth' in st.query_params and st.query_params['auth'] == 'true':
+        st.session_state.giris_yapildi = True
+    else:
+        st.session_state.giris_yapildi = False
 
 # Giriş yapılmadıysa giriş formunu göster
 if not st.session_state.giris_yapildi:
@@ -521,9 +525,10 @@ if not st.session_state.giris_yapildi:
         giris_butonu = st.form_submit_button("Giriş Yap")
         
         if giris_butonu:
-            # Burada gerçek kullanıcı doğrulama mantığınızı ekleyebilirsiniz
             if kullanici == "ikyb-brütüs" and sifre == "ücret2025":
+                # Giriş başarılı - URL'e oturum parametresi ekle
                 st.session_state.giris_yapildi = True
+                st.query_params['auth'] = 'true'
                 st.success("Giriş başarılı! Sayfa yenileniyor...")
                 st.rerun()
             else:
@@ -897,6 +902,7 @@ elif secim == "3.Sınıf Uzman":
 
 
 
+
 # Bilgi Mesajı: Manuel Giriş
 # if st.session_state.info_messages["info_mg"]:
 #     #st.info("Manuel giriş adımları;yaparken solda açılan pencerede yer alan tüm alanları doldurman gerekiyor. Alanların içindeki açıklamalar ücretlerini doğru girmen için yardımcı olacaktır.",icon="❗")
@@ -1091,7 +1097,7 @@ if st.session_state.sidebar_open:
 yemek_brut=[0]*12
 
 
-for i in range(12): # i = ilgili ay, 12 ay için döngü
+for i in range(12): #
     sandik_isleri(i,onceki_aylik[0] if i==0 else Aylık[i-1] ,Aylık[i])
     if i == yuklenen_bordro_ay-1:
         sskm[i] = veri_getir_kesintitablosu("Emekli Sandığı Matrahı")
@@ -1392,7 +1398,7 @@ with st.expander("Yıllık Ücretleriniz Tablo Gösterimi"):
 
 
 
-def tutar_format(value):
+def tutar_format(value):#
     
     formatted_value = f"{value:,.2f}"  # Binlik ayraçlar ve iki ondalık basamak
     formatted_value = formatted_value.replace(",", "X").replace(".", ",").replace("X", ".")
